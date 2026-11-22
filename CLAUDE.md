@@ -6,7 +6,7 @@
 
 Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assassin's Creed, situé dans l'**Empire du Mali en 1324**.
 
-- **Pitch** : pendant le pèlerinage de Mansa Moussa vers La Mecque, une relique sacrée est volée. Sira, jeune chasseur donso, remonte la piste jusqu'au mystère de la **flotte disparue d'Aboubakari II**.
+- **Pitch** : pendant le pèlerinage de Mansa Moussa vers La Mecque, une relique sacrée est volée. Sira, jeune chasseuse donso (exception que le griot commente, en écho à la femme-buffle du Do), remonte la piste jusqu'au mystère de la **flotte disparue d'Aboubakari II**.
 - **Narrateur** : un griot raconte l'épopée des siècles plus tard. Il commente, corrige (« non, ce n'est pas comme ça que ça s'est passé… ») et adapte l'épopée chantée aux choix du joueur.
 - **Ton** : épique, respectueux, authentique. Aucun cliché « Afrique générique ».
 
@@ -22,7 +22,8 @@ Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assas
 
 | Domaine | Outil |
 |---|---|
-| Moteur | Unreal Engine 5 (C++ + Blueprints) |
+| Moteur | Unreal Engine **5.8** (5.8.4) — C++ + Blueprints |
+| IDE C++ | Visual Studio 2026 (« Développement de jeux en C++ ») |
 | 3D | Blender (scripts Python pour automatiser) |
 | Textures | Substance Painter, Quixel Megascans |
 | Audio | FMOD Studio |

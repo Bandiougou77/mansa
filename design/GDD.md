@@ -1,5 +1,5 @@
 # MANSA — L'Héritier du Fleuve
-## Game Design Document — v1 (Phase 0, centré sur la vertical slice « Djenné »)
+## Game Design Document — v1.2 (Phase 0, centré sur la vertical slice « Djenné »)
 
 > Statut : v1, brouillon de travail. Rédigé par `directeur-creatif`.
 > Les données chiffrées sont des **valeurs de départ** à régler en jeu : elles vivent dans des Data Tables (`DT_*`) ou des fichiers JSON, **jamais en dur dans le code**.
@@ -10,7 +10,7 @@
 ## 1. Vision
 
 ### 1.1 Pitch
-**1324.** Mansa Moussa quitte le Mali pour son pèlerinage à La Mecque. Pendant son absence, une relique sacrée est volée. Sira, jeune chasseur *donso*, remonte la piste des voleurs, de ville en ville, jusqu'au mystère de la **flotte disparue d'Aboubakari II**. Ce récit est une **légende** présentée comme telle : al-Umari rapporte que Moussa a parlé d'un prédécesseur parti sur l'océan avec ses navires ; le nom « Aboubakari II » est une identification moderne, et une arrivée en Amérique n'est étayée par aucune preuve (cf. `glossaire.md`, §7).
+**1324.** Mansa Moussa quitte le Mali pour son pèlerinage à La Mecque. Pendant son absence, une relique sacrée est volée. Sira, jeune chasseuse *donso* (une exception, que le griot relève), remonte la piste des voleurs, de ville en ville, jusqu'au mystère de la **flotte disparue d'Aboubakari II**. Ce récit est une **légende** présentée comme telle : al-Umari rapporte que Moussa a parlé d'un prédécesseur parti sur l'océan avec ses navires ; le nom « Aboubakari II » est une identification moderne, et une arrivée en Amérique n'est étayée par aucune preuve (cf. `glossaire.md`, §7).
 Des siècles plus tard, un **griot** raconte cette épopée. Il commente, corrige, et l'épopée qu'il chante à la fin dépend de ce que le joueur a fait.
 
 ### 1.2 Ton
@@ -24,7 +24,7 @@ Des siècles plus tard, un **griot** raconte cette épopée. Il commente, corrig
 ### 1.4 Références et ce qui rend MANSA différent
 | Référence | Ce qu'on prend | Ce que MANSA fait autrement |
 |---|---|---|
-| **Uncharted** | Rythme scénarisé, escalade lisible, héros incarné | Escalade sur **architecture de terre** (banco) avec prises naturelles (toron) ; héros chasseur, pas pilleur de tombes |
+| **Uncharted** | Rythme scénarisé, escalade lisible, héros incarné | Escalade sur **architecture de terre** (banco) avec prises naturelles (toron, gouttières) ; héroïne chasseuse *donso*, pas pilleuse de tombes ; refus d'escalader le lieu sacré (la mosquée), assumé comme moment de caractère |
 | **Assassin's Creed** | Ville historique explorable, verticalité, point de vue en hauteur | Pas d'« Animus » : le cadre est un **griot** qui raconte et peut se tromper, se reprendre, adapter l'histoire |
 | **Ghost of Tsushima** | Respect d'une culture, DA forte | La culture est portée par la **parole et le son** (griot, djembé), pas seulement par l'image |
 | **Hi-Fi Rush / Sekiro** | Combat calé sur le rythme, lecture de l'ennemi | Rythme **joué par un djembé diégétique**, bonus sans punition lourde, accessible au débutant |
@@ -57,7 +57,7 @@ Décision tranchée : **aucun code de nyama, fasa ou saisons dans la Phase 1.** 
 ## 3. Boucle de jeu de la slice
 
 ### 3.1 Boucle principale (résumé)
-Explorer la ruelle → écouter / questionner le griot → escalader la façade → combattre 2 voleurs au rythme du djembé → récupérer un indice → le griot clôt le chapitre.
+Explorer la ruelle → écouter / questionner le griot → traverser la place au pied de la mosquée (Sira refuse de l'escalader) → escalader la façade de la grande maison de marchand → combattre 2 voleurs sur sa terrasse, au rythme du djembé → récupérer un indice → le griot clôt le chapitre, la mosquée en toile de fond.
 
 ### 3.2 Déroulé minute par minute (cible 12 min, plage 10-15)
 
@@ -65,20 +65,20 @@ Explorer la ruelle → écouter / questionner le griot → escalader la façade 
 |---|---|---|---|---|
 | 0:00-1:00 | **Intro** | Regarde (skippable) | Écran noir, voix off du griot narrateur (scriptée). Fondu sur la ruelle à l'aube | Repos |
 | 1:00-3:00 | **Ruelle : tutoriel déplacement** | Marche, court, saute un muret, se faufile entre des passants | Prompts contextuels discrets. Marché qui s'éveille | Repos |
-| 3:00-5:30 | **Rencontre du griot (PNJ)** | Parle au griot : 3 questions suggérées + saisie libre | Réponses via API Claude (cf. §6). Le griot donne l'objectif : « l'homme au turban indigo est monté sur la mosquée » 🔶 inspiré de (assumé) : le turban des musulmans et le voile de visage des Sahariens sont attestés (Ibn Battuta) ; une teinture indigo à Djenné en 1324 est plausible mais pas documentée (cf. `glossaire.md`, §6 « indigo ») | Repos / curiosité |
-| 5:30-6:30 | **Approche de la place** | Traverse la place du marché devant la mosquée | Plan large de la façade (moment « wow »). Voix off : première correction du narrateur | Montée |
-| 6:30-9:30 | **Escalade de la façade** | Grimpe via le banco et les toron, 1 saut entre contreforts, 1 passage en corniche | Tutoriel escalade, 1 prise qui s'effrite (frisson scripté, sans mort) | Montée |
-| 9:30-12:00 | **Combat sur la terrasse** | Affronte 2 ennemis (1 voleur agile, 1 brute) au rythme du djembé | Le djembé démarre (diégétique : joué en contrebas, cf. §5.1). Tutoriel rythme sur le 1er ennemi | Pic |
+| 3:00-5:30 | **Rencontre du griot (PNJ)** | Parle au griot : 3 questions suggérées + saisie libre | Réponses via API Claude (cf. §6). Le griot donne l'objectif : « l'homme au turban indigo a filé vers la place ; on l'a vu monter chez le marchand, la grande maison aux gouttières, à côté de la mosquée » 🔶 inspiré de (assumé) : le turban des musulmans et le voile de visage des Sahariens sont attestés (Ibn Battuta) ; une teinture indigo à Djenné en 1324 est plausible mais pas documentée (cf. `glossaire.md`, §6 « indigo ») | Repos / curiosité |
+| 5:30-6:30 | **Place et pied de la mosquée** | Traverse la place du marché, passe au pied de la mosquée | Plan large sur la mosquée (moment « wow »). Voix off : première correction du narrateur. Au pied de la mosquée, dont les toron offrent le chemin le plus court vers les toits, **Sira s'arrête et refuse de l'escalader** (réplique de Sira + commentaire du narrateur, cf. §6.2), puis se tourne vers la maison du marchand voisine | Montée |
+| 6:30-9:30 | **Escalade de la maison du marchand** | Grimpe la façade en banco via les toron, les gouttières et les reliefs, 1 saut entre contreforts, 1 passage en corniche | Tutoriel escalade, 1 prise qui s'effrite (frisson scripté, sans mort). La mosquée reste visible derrière Sira pendant la montée | Montée |
+| 9:30-12:00 | **Combat sur la terrasse du marchand** | Affronte 2 ennemis (1 voleur agile, 1 brute) au rythme du djembé | Le djembé démarre (diégétique : joué en contrebas, cf. §5.1). Tutoriel rythme sur le 1er ennemi | Pic |
 | 12:00-13:00 | **Indice** | Fouille le voleur vaincu, ramasse un objet-indice | Gros plan sur l'indice (ex. fragment de bois gravé d'une pirogue) 🔶 inspiré de (assumé) : la pirogue de bois et la sculpture sur bois sont plausibles en 1324 ; l'objet lui-même est inventé. Le lien avec la flotte d'Aboubakari II doit rester au stade de la rumeur (cf. `djenne-1324.md`, §11) | Retombée |
-| 13:00-14:00 | **Fin** | Regarde le fleuve depuis le toit | Voix off conclusive, variante selon 1 « choix » mineur (épargner ou non le voleur, cf. §6.4). Carton « À suivre » | Repos |
+| 13:00-14:00 | **Fin** | Regarde le fleuve depuis la terrasse du marchand, la mosquée à contre-jour | Voix off conclusive, variante selon 1 « choix » mineur (épargner ou non le voleur, cf. §6.4). Carton « À suivre » | Repos |
 
 ---
 
 ## 4. Personnage : Sira
 
 ### 4.1 Identité (slice)
-- Jeune chasseur *donso* (confrérie de chasseurs du Mandé). ⚠️ à valider par historien-mande. **Arbitrage de design** (options en §12, Q4) : prénom, genre, tenue et armes. Éléments historiques : la tunique couverte d'amulettes est documentée à l'époque moderne (hypothèse pour 1324, sans miroirs ni verroterie abondante) ; arc, couteau de chasse et lance légère sont plausibles ; **« Sira » est surtout un prénom féminin au Mali** (à confirmer avec un locuteur), alors que les confréries donso sont traditionnellement masculines (cf. `djenne-1324.md`, §8 ; `glossaire.md`, §3).
-- Arme de la slice : **un couteau de chasse + un bâton** (à confirmer), pas d'arc (hors scope).
+- Jeune **chasseuse** *donso* (confrérie de chasseurs du Mandé), prénom **Sira**. ✅ décidé (§12, Q4) : les confréries donso sont traditionnellement masculines, Sira est donc une **exception**, que le griot relève et commente avec gravité, sans jamais la présenter comme banale ni se moquer de la tradition (les donso sont une tradition vivante). Écho narratif : la **femme-buffle du Do** 🔶 inspiré de (assumé) : figure de l'épopée de Soundiata (tradition orale, versions multiples), femme puissante liée à la chasse et au *nyama* ; on s'en sert comme écho poétique dans la bouche du griot, pas comme filiation ni comme fait historique. Répliques exemples en §6.2. Tenue : tunique de coton en bandes, teinte ocre ou brune, amulettes de cuir, cornes, cauris, bonnet de chasseur. Éléments historiques : la tunique couverte d'amulettes est documentée à l'époque moderne (hypothèse pour 1324, sans miroirs ni verroterie abondante) ; arc, couteau de chasse et lance légère sont plausibles ; **« Sira » est surtout un prénom féminin au Mali** (à confirmer avec un locuteur), alors que les confréries donso sont traditionnellement masculines (cf. `djenne-1324.md`, §8 ; `glossaire.md`, §3).
+- Arme de la slice : **un couteau de chasse + une lance courte** ✅ décidé (lance légère plausible, cf. `djenne-1324.md`, §8), pas d'arc (hors scope).
 
 ### 4.2 Contrôles
 
@@ -112,14 +112,14 @@ Toutes les touches remappables (Enhanced Input, `IMC_Exploration`, `IMC_Escalade
 Base : `CharacterMovementComponent` standard d'UE5 + Motion Warping pour le mantle. Pas de parkour libre dans la slice.
 
 ### 4.4 Escalade
-**Intention** : sentir que la mosquée est un bâtiment *fait à la main*, et que ses prises sont naturelles, pas des marqueurs jaunes.
+**Intention** : sentir que la grande maison du marchand est un bâtiment *fait à la main*, et que ses prises (toron, gouttières, reliefs du banco) sont naturelles, pas des marqueurs jaunes. Sentir aussi, par contraste, que la mosquée voisine est un lieu qu'on ne gravit pas : elle n'a **aucune prise active** (aucun `BP_PriseEscalade`), Sira refuse de la grimper (§3.2, §7.3), et elle sert de repère visuel pendant toute la montée.
 
 **Principe technique (simple, adapté à un débutant)** : escalade **à prises discrètes** (comme Uncharted), pas d'escalade libre sur toute surface. Chaque prise est un acteur ou composant placé à la main (`BP_PriseEscalade`) avec un tag de type.
 
 **Types de prises (`DT_PrisesEscalade`)** :
 | Type (`PriseType`) | Description | Règle |
 |---|---|---|
-| `Toron` | Poutre de bois de palmier rônier qui dépasse du mur 🔶 inspiré de (assumé) : la fonction des toron (échafaudage permanent pour le crépissage) est attestée ; on ignore depuis quand ils existent et à quoi ressemblait la mosquée de 1324 (le bâtiment actuel date de 1906-1907). On les garde, de façon plus irrégulière (cf. `djenne-1324.md`, §5-6) | Prise sûre, solide, on peut s'y suspendre indéfiniment |
+| `Toron` | Poutre de bois de palmier rônier qui dépasse du mur 🔶 inspiré de (assumé) : la fonction des toron (échafaudage permanent pour le crépissage) est attestée ; on ignore depuis quand ils existent. Ils sont plus fréquents sur la mosquée et les grandes façades que sur les petites maisons, ce qui rend plausible leur présence sur une grande maison de marchand. On les garde, de façon irrégulière (cf. `djenne-1324.md`, §6). Les **gouttières** saillantes en demi-tronc utilisent aussi ce type | Prise sûre, solide, on peut s'y suspendre indéfiniment |
 | `BancoRelief` | Arête, saillie de contrefort, rebord de fenêtre en banco | Prise standard |
 | `BancoFragile` | Banco érodé | S'effrite après **1,5 s** de suspension, la prise disparaît (scripté, 1 seule dans la slice) |
 | `Corniche` | Rebord horizontal (terrasse, sommet de mur) | Déplacement latéral + mantle vers le haut |
@@ -137,7 +137,7 @@ Base : `CharacterMovementComponent` standard d'UE5 + Motion Warping pour le mant
 | Exploration | 300 cm | 85° | Légèrement décalée épaule droite |
 | Escalade | 400 cm | 90° | Recul pour lire le mur ; la caméra s'oriente vers la prochaine prise suggérée |
 | Combat | 450 cm | 90° | Cadre les 2 ennemis ; verrouillage optionnel |
-| Plan « wow » façade | Caméra scriptée | — | 4 s max, skippable |
+| Plan « wow » mosquée | Caméra scriptée | — | 4 s max, skippable |
 
 Valeurs dans `DT_CameraProfiles`, transitions interpolées sur **0,4 s**.
 
@@ -149,7 +149,7 @@ Valeurs dans `DT_CameraProfiles`, transitions interpolées sur **0,4 s**.
 
 ### 5.1 Intention
 Le joueur doit sentir qu'il **danse avec le djembé** : frapper en rythme est gratifiant, rater le rythme n'est jamais humiliant.
-Diégétique : un joueur de djembé, en contrebas sur la place, accompagne le combat (le griot narrateur peut même commenter : « et le tambour de la place se mit à parler… »). ⚠️ à valider par historien-mande. **Arbitrage de design** (options en §12, Q1). Fait établi : le djembé **n'est attesté par aucune source médiévale** (hypothèse pour 1324) ; en revanche, les tambours sont attestés au Mali (Ibn Battuta, 1352 : tambours et trompettes de cour), ainsi que le balafon. Un tambourinaire sur une place de marché est plausible (cf. `glossaire.md`, §4).
+Diégétique : un joueur de djembé, en contrebas sur la place, au pied de la maison du marchand, accompagne le combat. ✅ décidé (§12, Q1) : on **garde le djembé**, assumé par le narrateur, qui « raconte avec les tambours de son temps » ; il le dit lui-même à l'écran (réplique en §6.2). L'ensemble tambour de place + pilons + balafon tenant le tempo est **à étudier en Phase 2**. Fait établi : le djembé **n'est attesté par aucune source médiévale** (hypothèse pour 1324) ; en revanche, les tambours sont attestés au Mali (Ibn Battuta, 1352 : tambours et trompettes de cour), ainsi que le balafon. Un tambourinaire sur une place de marché est plausible (cf. `glossaire.md`, §4).
 
 ### 5.2 Tempo et fenêtre (valeurs de départ, `DT_RythmeCombat`)
 | Paramètre | Valeur de départ | Plage de réglage |
@@ -170,7 +170,7 @@ Source de vérité du temps : **la timeline de l'événement FMOD** (callbacks d
 | Attaque lourde | 25 | 400 / 150 / 450 ms | Brise la garde de la brute |
 | Esquive | — | 350 ms dont **200 ms d'invulnérabilité** | Recul de 250 cm |
 
-Valeurs dans `DT_AttaquesJoueur`. Le moment de l'**impact** (fin du startup) est celui qui est comparé au temps, pas l'appui de la touche : l'appui est anticipé par le système d'une durée = startup. Choix à valider en prototype : si c'est trop complexe, comparer l'appui (plus simple, voir Questions ouvertes).
+Armes : **couteau de chasse** pour les attaques légères, **lance courte** pour l'attaque lourde (coup d'estoc ou balayage à deux mains, avec de l'allonge) ; les animations de combat et le finisher sont faits pour cette paire d'armes (pas de bâton). Valeurs dans `DT_AttaquesJoueur`. Le moment de l'**impact** (fin du startup) est celui qui est comparé au temps, pas l'appui de la touche : l'appui est anticipé par le système d'une durée = startup. Choix à valider en prototype : si c'est trop complexe, comparer l'appui (plus simple, voir Questions ouvertes).
 
 ### 5.4 Ce que donne un coup en rythme
 | Qualité | Multiplicateur dégâts | Effet combo | Autre |
@@ -230,13 +230,18 @@ Valeurs dans `DT_AttaquesJoueur`. Le moment de l'**impact** (fin du startup) est
 | Déclencheurs | Volumes de déclenchement + événements (entrée de zone, combat, fin) | Le joueur engage la conversation |
 | Hors-ligne | Fonctionne toujours | Fallback scripté (§6.3) |
 
-Statut des griots (*jeli*, caste de la parole, généalogistes, conseillers) : fait solide dans les grandes lignes, quant au ton de leur relation à un jeune chasseur, 🔶 inspiré de (assumé) : le jeli appartient aux *nyamakala*, il est à la fois respecté et craint ; il peut parler librement, taquiner, rappeler la lignée de son interlocuteur et attendre un présent en échange de sa parole. Les donso ont aussi leurs propres bardes (*sora*). Il ne faut pas parler de « caste » au sens indien, ni décrire un serviteur (cf. `glossaire.md`, §1 et §4).
+Statut des griots (*jeli*, caste de la parole, généalogistes, conseillers) : fait solide dans les grandes lignes, quant au ton de leur relation à une jeune chasseuse, 🔶 inspiré de (assumé) : le jeli appartient aux *nyamakala*, il est à la fois respecté et craint ; il peut parler librement, taquiner, rappeler la lignée de son interlocuteur et attendre un présent en échange de sa parole. Les donso ont aussi leurs propres bardes (*sora*). Il ne faut pas parler de « caste » au sens indien, ni décrire un serviteur (cf. `glossaire.md`, §1 et §4).
 
 ### 6.2 Exemples de lignes du narrateur (à réécrire après validation)
 - Intro : « Écoute. Ce que je vais te dire, mon père le tenait de son père. C'était l'année où le Mansa partit vers la ville sainte… »
-- Correction (si le joueur saute d'un toit au lieu de grimper) : « Non, non… ce n'est pas comme ça que ça s'est passé. Sira n'était pas un oiseau. Il a grimpé, prise après prise. » → le jeu ramène au checkpoint (habillage narratif du « rattrapage »).
-- Correction (si le joueur reste longtemps au marché) : « Certains disent qu'il s'attarda au marché. Ceux-là n'ont jamais connu Sira. »
+- Sira chasseuse (intro ou première apparition) : « Les anciens disent qu'aucune femme n'entrait chez les donso. Ils le disent encore, et ils ont raison de le dire. Mais Sira y est entrée, et c'est pour cela qu'on chante encore son nom. »
+- Sira chasseuse, écho à la femme-buffle du Do 🔶 inspiré de (assumé) (épopée de Soundiata, tradition orale) : « Depuis la femme-buffle du Do, les chasseurs savent qu'une femme peut porter plus de *nyama* que dix hommes. Sira, elle, portait une lance. » (variante possible chez le griot PNJ, qui taquine sans moquer : « Une chasseuse ? Les donso de mon père auraient froncé les sourcils. Moi, je chante ce qui est rare. ») ⚠️ formulations à relire par historien-mande avant enregistrement.
+- Correction (si le joueur saute d'un toit au lieu de grimper) : « Non, non… ce n'est pas comme ça que ça s'est passé. Sira n'était pas un oiseau. Elle a grimpé, prise après prise. » → le jeu ramène au checkpoint (habillage narratif du « rattrapage »).
+- Correction (si le joueur reste longtemps au marché) : « Certains disent qu'elle s'attarda au marché. Ceux-là n'ont jamais connu Sira. »
+- Place (plan « wow ») : « La mosquée que vous connaissez fut rebâtie bien plus tard. Celle-ci, je la raconte comme mes pères me l'ont racontée. »
+- Refus au pied de la mosquée (scripté, sur le chemin critique) : Sira, à voix basse : « Pas par là. Pas sur la maison de Dieu. » Narrateur : « Le chemin le plus court passait par les toron de la mosquée. Sira ne le prit pas. Il y a des murs qu'on ne gravit pas, même pour rattraper un voleur. Elle prit la maison du marchand. »
 - Combat : « Et le tambour de la place se mit à parler, et Sira l'écouta. »
+- Combat, djembé assumé (une fois, au premier temps du djembé) : « Un djembé ? En ce temps-là ? Peut-être pas… Mais je raconte avec les tambours de mon temps, et celui-là sait parler. Écoute-le. »
 - Fin (voleur épargné / non épargné) : deux variantes de 1 phrase.
 
 ### 6.3 Griot PNJ : règles de conversation
@@ -245,11 +250,13 @@ Statut des griots (*jeli*, caste de la parole, généalogistes, conseillers) : f
 - **Contexte envoyé au backend** : identifiant du PNJ, étape de la quête, historique des 6 derniers échanges. **Jamais la clé API côté client** : le jeu appelle uniquement l'endpoint Laravel.
 - **Garde-fous (prompt système + filtres backend)** :
   - Reste en personnage : un griot de 1324, ne connaît pas le monde moderne, ne parle pas de « jeu », d'« IA » ni de « Claude ».
-  - Ramène toujours vers l'objectif de la slice (le voleur, la mosquée) après 2 questions hors sujet.
+  - Ramène toujours vers l'objectif de la slice (le voleur, la maison du marchand) après 2 questions hors sujet.
+  - Si le joueur parle d'escalader la mosquée, le griot l'en dissuade, dans son rôle et avec respect (« On ne pose pas le pied sur la maison de Dieu. Le marchand, lui, a des murs solides. »). Il ne présente jamais la mosquée comme un parcours.
+  - Il sait que Sira est une chasseuse, chose rare chez les donso : il peut le relever (curiosité, respect, taquinerie légère de jeli), jamais le moquer ni le banaliser.
   - Refuse poliment les sujets inappropriés, en restant dans le rôle (« Ces paroles-là ne se disent pas sur la place du marché. »).
   - N'invente pas de faits historiques précis : la fiche de connaissances du griot (`backend/…/griot_djenne.json`, contenu validé par l'historien) est la seule source de faits.
 - **Latence** : cible **< 2,5 s** jusqu'au premier texte affiché (streaming si possible), délai max **6 s** puis fallback.
-- **Masquage de la latence** : animation « le griot réfléchit » (il accorde son instrument, ⚠️ à valider par historien-mande. **Arbitrage de design** (options en §12, Q11). La **kora est exclue pour 1324** (anachronisme très probable, elle vient de Sénégambie, XVIIe-XVIIIe s.) ; un luth de type ngoni est plausible, et le balafon est attesté en 1352) + son d'ambiance.
+- **Masquage de la latence** : animation « le griot réfléchit » : **il accorde son ngoni** (luth à cordes pincées ; ✅ décidé, §12, Q11 ; forme exacte en 1324 inconnue, cf. `glossaire.md`, §4) + son d'ambiance. La **kora est exclue pour 1324** (anachronisme très probable) ; elle reste éventuellement l'instrument du **narrateur** des siècles plus tard.
 - **Fallback hors-ligne** : si erreur réseau, timeout ou réponse filtrée → réplique tirée de `DT_GriotFallback` (au moins 15 répliques : 3 par question suggérée + 6 génériques). Le joueur ne voit jamais de message d'erreur technique.
 
 ### 6.4 Le seul « choix » de la slice
@@ -257,7 +264,7 @@ Après le combat, l'action Interagir sur le voleur à terre propose : **Épargne
 
 ---
 
-## 7. Level design : ruelle et façade
+## 7. Level design : ruelle, place et maison du marchand
 
 > Fiche détaillée à produire : `design/niveaux/djenne-slice.md`.
 
@@ -266,53 +273,59 @@ Après le combat, l'action Interagir sur le voleur à terre propose : **Épargne
 |---|---|---|
 | **A. Ruelle** | 60 × 4-6 m, sinueuse | Tutoriel déplacement, ambiance, 1 muret, 1 passage étroit |
 | **B. Coin du griot** | Placette 10 × 10 m | Conversation, repos |
-| **C. Place du marché** | 40 × 30 m | Plan « wow » sur la façade, foule légère (5-8 PNJ animés en boucle) |
-| **D. Façade de la mosquée** | ~20 m de haut 🔶 inspiré de (assumé) : on ignore les dimensions de l'édifice de 1324. La façade du jeu **ne reprend pas** la silhouette de 1907 (trois tours, œufs d'autruche) ; elle est plus massive, avec une tour principale. Garder ~20 m comme hauteur maximale de la tour, pas comme celle d'un mur continu (cf. `djenne-1324.md`, §5) | Escalade, 3 sections |
-| **E. Terrasse / toit** | 15 × 12 m | Arène de combat, puis vue sur le fleuve |
+| **C. Place du marché** | 40 × 30 m | Plan « wow » sur la mosquée, foule légère (5-8 PNJ animés en boucle), point de refus au pied de la mosquée **[R]**. **Mosquée = décor, non escaladable** (aucune prise active), visible depuis C et depuis E. 🔶 inspiré de (assumé) : on ignore les dimensions de l'édifice de 1324. La mosquée du jeu **ne reprend pas** la silhouette de 1907 (trois tours, œufs d'autruche) ; elle est plus massive, avec une tour principale (~20 m comme hauteur maximale de la tour, pas comme celle d'un mur continu), sur un tertre (cf. `djenne-1324.md`, §5) |
+| **D. Façade de la maison du marchand** | 3 sections D1-D3 (voir §7.3). Grande maison à étage en banco et briques rondes modelées (*djenné-ferey*), toron, gouttières saillantes, acrotère à pinacles. Façade décorée **sobrement** 🔶 inspiré de (assumé) : pilastres simples, porte basse en bois épais, petites ouvertures ; pas de façade « toucouleur » ou « marocaine » détaillée, style documenté aux XIXe-XXe s. (cf. `djenne-1324.md`, §6) | Escalade, 3 sections |
+| **E. Terrasse du marchand** | 15 × 12 m | Arène de combat, puis vue sur le fleuve et sur la mosquée en toile de fond |
 
 ### 7.2 Croquis (vue de dessus, non à l'échelle)
 ```
-                    N (fleuve au loin, visible depuis E)
-  +-------------------------------------------------+
-  |   E. TERRASSE (arène)    [T]=tour  [x]=obstacle |
-  |   [T]      [x]           [T]          [T]       |
-  |        S1          S2 (voleur, brute)           |
-  |   ====== corniche ====== ======================  |
-  |   D3: toron en échelle      D3': saut contrefort|
-  |   D2: banco relief + 1 BancoFragile             |
-  |   D1: toron bas, mantle sur socle               |
-  +==================FAÇADE (D)======================+
-  |                                                 |
-  |            C. PLACE DU MARCHÉ                    |
-  |   [étal] [étal]    (plan wow ici)   [étal]       |
-  |                        ^                        |
-  +-------------+          |          +-------------+
-                |  B. GRIOT [G]       |
-                +------+    +---------+
-                       |    |  <- muret (enjambement)
-                       | A. |
-                       |RUE-|   <- passage étroit (faufiler)
-                       |LLE |
-                       |    |
-                       [SPAWN]  S
+                         N (fleuve au loin, visible depuis E)
+  +--------------------------+   +-----------------------------------+
+  | MOSQUÉE (toile de fond)  |   | E. TERRASSE DU MARCHAND (arène)   |
+  |  [T] tour principale     |   |   [x]      S1          [x]        |
+  |  contreforts, toron      |   |        S2 (voleur, brute)         |
+  |  AUCUNE prise active     |   |   [x]                     [x]     |
+  |                          |   | ====== corniche / acrotère ====== |
+  |  (vue depuis C et E)     |   | D3: toron + gouttière | D3': saut |
+  |                          |   | D2: banco relief + 1 BancoFragile |
+  |        tertre            |   | D1: toron bas, mantle sur socle   |
+  +-----------[R]------------+   +=====FAÇADE DU MARCHAND (D)========+
+  |                                            ^                     |
+  |   [R] refus de Sira    C. PLACE DU MARCHÉ  |    [J] djembé       |
+  |   [étal] [étal]  (plan wow vers la mosquée)      [étal]          |
+  |                          ^                                       |
+  +---------------+          |           +---------------------------+
+                  |   B. GRIOT [G]       |
+                  +-------+    +---------+
+                          |    |  <- muret (enjambement)
+                          | A. |
+                          |RUE-|   <- passage étroit (faufiler)
+                          |LLE |
+                          |    |
+                          [SPAWN]  S
 ```
+Légende : [T] tour, [x] obstacle bas, [R] point de refus (trigger scripté), [J] joueur de djembé (visible depuis E), [G] griot PNJ, S1/S2 positions de départ des ennemis.
 
 ### 7.3 Chemin critique et escalade
 1. **Spawn** (bas de la ruelle) → muret → passage étroit → **[G] griot** (dialogue requis pour déclencher l'objectif, 1 min max même si le joueur ne pose aucune question).
-2. Place du marché → déclenchement du plan « wow » à l'entrée de C.
-3. **D1** (5 m) : toron régulièrement espacés tous les 100-120 cm, apprentissage. Checkpoint au pied.
-4. **D2** (7 m) : alternance banco relief / toron, 1 `BancoFragile` au milieu, avec un toron de secours latéral à 150 cm. Checkpoint sur la corniche intermédiaire.
-5. **D3** (8 m) : choix entre la colonne de toron (sûre) et le saut entre contreforts (plus rapide, plus spectaculaire). Les deux mènent à la corniche finale.
-6. **Mantle** sur la terrasse → déclenchement du combat (portes de sortie fermées par la mise en scène : les ennemis bloquent l'accès).
+2. Place du marché → déclenchement du plan « wow » sur la mosquée à l'entrée de C.
+3. **[R] Pied de la mosquée** : le chemin critique longe la mosquée, dont les toron semblent le chemin le plus court vers les toits. Volume de déclenchement (`TV_RefusMosquee`, une seule fois) : courte séquence scriptée, skippable, avec la réplique de Sira et le commentaire du narrateur (§6.2), puis la caméra s'oriente vers la façade du marchand. La mosquée n'a **aucun** `BP_PriseEscalade` et aucun prompt « Grimper ».
+4. **D1** (5 m) : toron régulièrement espacés tous les 100-120 cm, apprentissage. Checkpoint au pied de la maison du marchand.
+5. **D2** (7 m) : alternance banco relief / toron / gouttière, 1 `BancoFragile` au milieu, avec un toron de secours latéral à 150 cm. Checkpoint sur la corniche intermédiaire.
+6. **D3** (8 m) : choix entre la colonne de toron et de gouttières (sûre) et le saut entre contreforts (plus rapide, plus spectaculaire). Les deux mènent à l'acrotère.
+7. **Mantle** sur la terrasse du marchand → déclenchement du combat (portes de sortie fermées par la mise en scène : les ennemis bloquent l'accès).
 
 Règle : le chemin à suivre doit se lire **par la lumière** (soleil rasant de l'aube sur les toron) et par la forme, pas par de la peinture jaune.
 
-⚠️ à valider par historien-mande. **Arbitrage de design** (options en §12, Q2). Escalader la façade d'une mosquée est un acte sensible. Justification narrative proposée : poursuite d'un voleur qui a profané le lieu, Sira grimpe pour l'empêcher de fuir par les toits, et le narrateur peut noter la gravité du geste. Option de repli : transposer l'escalade sur un autre bâtiment monumental en banco (ex. une grande maison de marchand à façade décorée).
+⚠️ **Point ouvert de level design** : les hauteurs D1-D3 (5 + 7 + 8 = 20 m) ont été pensées pour la mosquée. Une maison de Djenné fait 1 à 2 étages et « seule la mosquée domine » (`djenne-1324.md`, §6). À trancher en greybox : soit une maison plus haute que la normale (exception assumée, mais elle concurrencerait la mosquée), soit un parcours rallongé à l'horizontale (traversées, annexe plus basse, maison voisine) pour une hauteur réelle d'environ 8-10 m.
 
-### 7.4 Arène (zone E)
-- 15 × 12 m, sol plat, 3-4 obstacles bas (jarres, bois) pour casser les lignes sans bloquer la caméra.
-- Bordures : parapets de 1 m (pas de chute possible).
+✅ décidé (§12, Q2) : **hybride**. Escalader une mosquée est un acte sensible. On en fait donc un moment de caractère : la poursuite passe au pied de la mosquée, Sira **refuse** de la gravir, et le narrateur souligne ce choix ; l'escalade et le combat ont lieu sur la grande maison du marchand voisine (banco, toron, gouttières : même vocabulaire d'escalade). La mosquée garde son rôle de repère et de plan « wow », depuis la place et depuis la terrasse. Recommandation maintenue : faire relire la scène du refus par au moins un lecteur musulman, idéalement malien.
+
+### 7.4 Arène (zone E, terrasse du marchand)
+- 15 × 12 m, sol plat de terre damée, 3-4 obstacles bas (jarres, bois, nattes roulées) pour casser les lignes sans bloquer la caméra.
+- Bordures : parapets / acrotère de 1 m (pas de chute possible).
 - Le joueur de djembé est **visible** en contrebas sur la place (lien diégétique son/image).
+- La mosquée est visible en toile de fond depuis l'arène : la cadrer dans le plan d'ouverture du combat et dans le plan de fin.
 
 ---
 
@@ -320,14 +333,15 @@ Règle : le chemin à suivre doit se lire **par la lumière** (soleil rasant de 
 
 ### 8.1 DA
 - **Palette** : ocre et brun du banco, bleu indigo et blanc des tissus, ombres bleutées de l'aube, or chaud du soleil rasant. 🔶 inspiré de (assumé) : le coton tissé en bandes étroites est attesté (textiles tellem, XIe s.) ; l'indigo est plausible ; le bogolan relève de l'hypothèse pour 1324, à n'utiliser qu'avec parcimonie (cf. `glossaire.md`, §6).
-- **Matériaux clés** (Substance / Megascans) : `M_Banco` (murs, avec variation d'érosion par vertex paint), `M_Toron` (bois de palmier), `M_SolTerreBattue`.
-- **Lumière** : aube, Lumen, soleil bas pour dessiner les reliefs de la façade.
-- **Personnages** : Sira, griot, voleur, brute, 5-8 passants (variantes de couleurs d'un même modèle). Base possible : MetaHuman, avec tenues refaites dans Blender. 🔶 inspiré de (assumé) : le cadre des costumes est fixé dans `djenne-1324.md`, §8 et §10 ; chaque planche de costume est à faire relire par historien-mande avant modélisation.
+- **Matériaux clés** (Substance / Megascans) : `M_Banco` (murs, avec variation d'érosion par vertex paint), `M_Toron` (bois de palmier, toron et gouttières), `M_SolTerreBattue`.
+- **Bâtiments clés** : la **maison du marchand** (escaladable, détail élevé, lisible de près) et la **mosquée** (décor non escaladable, vue de loin depuis la place et la terrasse : silhouette forte, détail moyen, 🔶 silhouette « médiévale imaginée », cf. §7.1).
+- **Lumière** : aube, Lumen, soleil bas pour dessiner les reliefs de la façade du marchand et découper la silhouette de la mosquée.
+- **Personnages** : Sira (chasseuse donso, armée d'un couteau de chasse et d'une lance courte), griot (avec son ngoni), voleur, brute, 5-8 passants (variantes de couleurs d'un même modèle). Base possible : MetaHuman, avec tenues refaites dans Blender. 🔶 inspiré de (assumé) : le cadre des costumes est fixé dans `djenne-1324.md`, §8 et §10 ; chaque planche de costume est à faire relire par historien-mande avant modélisation.
 - Style : réaliste stylisé, pas photoréaliste (plus atteignable pour un développeur seul).
 
 ### 8.2 Audio (FMOD)
 - **Ambiance** : marché qui s'éveille, appel à la prière au loin à l'aube ✅ validé : islam établi à Djenné (mosquée fondée selon la tradition au XIIIe s.) ; voix seule, sans amplification, en arabe. Ajouter les récitations des écoles coraniques et les pilons (cf. `djenne-1324.md`, §4 et §9), oiseaux, fleuve.
-- **Musique** : quasi absente en exploration (le son de la ville suffit) ; en escalade, nappe discrète ; en combat, **djembé** à 96 BPM + couches qui s'ajoutent selon le combo (paramètre FMOD `Combo` 0-3).
+- **Musique** : quasi absente en exploration (le son de la ville suffit) ; en escalade, nappe discrète ; en combat, **djembé** (assumé par le narrateur, cf. §5.1) à 96 BPM + couches qui s'ajoutent selon le combo (paramètre FMOD `Combo` 0-3).
 - **Voix** : narrateur pré-enregistré ou TTS pré-généré (jamais en temps réel dans la slice) ; griot PNJ en texte seul, TTS optionnel si le temps le permet.
 - Le paramètre FMOD `Tempo` est exposé mais fixe dans la slice.
 
@@ -360,6 +374,8 @@ Tout ce qui suit va dans `design/idees-plus-tard.md` si quelqu'un le propose pen
 - Plus de 2 ennemis, boss, IA de groupe avancée.
 - Arbre de compétences, inventaire, équipement, économie.
 - Variation de tempo du djembé en combat.
+- Ensemble tambour de place + pilons + balafon tenant le tempo du combat — à étudier en Phase 2.
+- Escalade de la mosquée (exclue par design, pas seulement par scope : cf. §7.3).
 - Reconnaissance vocale (Whisper), TTS en temps réel.
 - Mémoire persistante du griot entre sessions.
 - Cinématiques complexes (au-delà de caméras scriptées simples).
@@ -374,10 +390,12 @@ La slice est terminée quand **toutes** ces conditions sont vraies :
 
 **Contenu**
 - [ ] Les 5 zones (A-E) sont jouables de bout en bout sans blocage.
+- [ ] La scène du refus au pied de la mosquée se déclenche à chaque partie sur le chemin critique, et la mosquée n'a aucune prise active (0 `BP_PriseEscalade`, aucun prompt « Grimper »).
+- [ ] La mosquée est visible depuis la place (plan « wow ») et depuis la terrasse du marchand (combat et fin).
 - [ ] Durée mesurée sur 3 testeurs n'ayant jamais joué : entre **10 et 15 min**.
 
 **Déplacement / escalade**
-- [ ] Le chemin critique d'escalade (D1-D3) se termine sans aide extérieure par 3 testeurs sur 3.
+- [ ] Le chemin critique d'escalade sur la façade du marchand (D1-D3) se termine sans aide extérieure par 3 testeurs sur 3.
 - [ ] 0 cas de personnage coincé dans la géométrie sur 10 parties.
 
 **Combat**
@@ -400,38 +418,23 @@ La slice est terminée quand **toutes** ces conditions sont vraies :
 
 **Culture**
 - [ ] Tous les points ⚠️ de ce document sont soit validés par `historien-mande`, soit remplacés par une option « inspirée de » assumée et notée.
+- [ ] La scène du refus de la mosquée et les répliques sur Sira chasseuse ont été relues par `historien-mande` et, si possible, par un lecteur musulman malien et un connaisseur des donso.
 
 ---
 
 ## 12. Questions ouvertes
-1. **Djembé en 1324** : ⚠️ arbitrage ouvert. Fait : aucune attestation médiévale du djembé ; les tambours en général sont attestés. Options (historien-mande) :
-   - a) **Garder le djembé, justifié par le narrateur** : le griot, qui vit des siècles plus tard, « raconte avec les tambours de son temps » ; on peut même en faire une correction à l'écran. Coût nul.
-   - b) **Tambour générique de 1324** à l'écran (tambour sur cadre ou tambour d'aisselle, sans nom précis) ; le mot « djembé » reste réservé au marketing et au narrateur. Coût : un modèle 3D et des sons différents.
-   - c) **Ensemble plausible** : tambour de place + pilons des femmes + balafon (attesté en 1352) qui tiennent le tempo. Plus riche, mais plus de travail audio.
-   - **Recommandation** : a) pour la slice (pas de coût, renforce le pilier griot), c) à étudier en Phase 2.
-2. **Mosquée de Djenné en 1324** : aspect tranché, 🔶 inspiré de (assumé) : on ne reprend **pas** la silhouette de 1907. Voir `djenne-1324.md`, §5 (plus basse, massive, une tour principale, sans œufs d'autruche, enduit irrégulier ; le griot signale qu'elle a été rebâtie plus tard). **Lieu de l'escalade et du combat** : ⚠️ arbitrage ouvert. Options :
-   - a) **Mosquée** avec justification forte : le voleur a profané le lieu, Sira le poursuit, le narrateur souligne la gravité du geste et le combat évite la salle de prière (terrasse uniquement). Effet « wow » maximal, mais risque de heurter des joueurs musulmans.
-   - b) **Grande maison de marchand ou palais du koy** voisin, depuis laquelle on voit la mosquée en toile de fond. Peu de risque, et le niveau reste presque identique (banco, toron, gouttières).
-   - c) **Hybride** : on escalade la maison de marchand, la poursuite s'arrête au pied de la mosquée, que Sira refuse d'escalader (moment narratif fort).
-   - **Recommandation** : c), ou à défaut b). Le choix final revient au développeur, idéalement après avis d'un lecteur musulman malien.
+1. **Djembé en 1324** : ✅ décidé (2026-11-23) : on garde le djembé, assumé par le narrateur qui « raconte avec les tambours de son temps » (réplique en §6.2) ; l'ensemble tambour de place + pilons + balafon est à étudier en Phase 2.
+2. **Mosquée et lieu de l'escalade** : ✅ décidé (2026-11-23) : hybride : escalade et combat sur la grande maison de marchand voisine de la place ; la poursuite passe au pied de la mosquée, que Sira refuse de gravir ; mosquée en toile de fond (plan « wow »), 🔶 inspiré de (assumé) : silhouette de 1907 non reprise (cf. `djenne-1324.md`, §5).
 3. **Statut politique de Djenné en 1324** : ✅ validé (cadre) : les sources divergent, et la réponse est assumée. Djenné est une **cité autonome**, avec son *koy* et ses notables marchands, dans l'orbite du Mali et sous sa pression ; un émissaire du mansa y réside ; Moussa est absent (pèlerinage). Le griot PNJ peut dire « on dit que Djenné ne s'est jamais soumise » (tradition, Tarikh es-Sudan). Voir `djenne-1324.md`, §1.
-4. **Sira** : ⚠️ arbitrage ouvert. Faits : « Sira » est surtout un prénom féminin au Mali (à confirmer avec un locuteur) ; les confréries donso sont traditionnellement masculines ; arc, couteau et lance légère sont plausibles, le bâton moins typique, mais acceptable (bâton de marche ou de berger). Options :
-   - a) **Chasseur masculin** avec un prénom masculin mandingue (à choisir avec un locuteur), « Sira » devenant éventuellement un surnom. Fidèle aux donso.
-   - b) **Sira, chasseuse**, exception assumée : le narrateur en fait un thème (« les anciens disent qu'aucune femme… et pourtant »). Original, mais à traiter avec tact, car les donso sont une tradition vivante.
-   - c) Garder **Sira masculin** sans commentaire : déconseillé si le prénom est confirmé féminin.
-   - Tenue (pour toutes les options) : tunique de coton en bandes, teinte ocre ou brune, amulettes de cuir, cornes, cauris, bonnet de chasseur ; armes : **couteau de chasse + lance courte** plutôt qu'un bâton (même gameplay d'arme longue).
-   - **Recommandation** : a) ou b), à trancher par le développeur ; dans tous les cas, lance courte à la place du bâton.
+4. **Sira** : ✅ décidé (2026-11-23) : chasseuse, prénom Sira, exception commentée par le griot (écho à la femme-buffle du Do, 🔶 inspiré de (assumé), épopée de Soundiata), couteau de chasse + lance courte.
 5. **Détection du rythme** : comparer le moment de l'impact (plus juste) ou celui de l'appui (plus simple) ? À trancher en prototype, valeur par défaut : l'appui si le dev manque de temps.
 6. **Voix du narrateur** : comédien enregistré ou TTS ElevenLabs pour la slice ? Question de budget et d'authenticité (accent, langue).
 7. **Langue des dialogues** : tout en français ou quelques mots en mandingue (salutations) sous-titrés ? Nécessite un validateur locuteur.
 8. **Relique volée** : quelle nature ? Doit être validée culturellement avant d'apparaître même par allusion dans la slice. Note historien-mande : éviter un objet sacré de l'islam réel (Coran précis, relique du Prophète) ou un *boli* réel ; préférer un objet inventé, lié au pèlerinage (présent destiné au Caire ou à La Mecque).
 9. **Indice de fin de slice** (fragment de pirogue gravé ?) : 🔶 inspiré de (assumé) : cohérent avec l'artisanat de l'époque (pirogues et bois sculpté plausibles). Les « navires » d'Aboubakari II restent un récit rapporté par al-Umari : l'indice doit suggérer une rumeur, pas une preuve.
 10. **Coûts API** : budget mensuel de tests du griot PNJ, et limite de requêtes par session côté Laravel.
-11. **Instrument du griot PNJ** (animation « le griot réfléchit ») : ⚠️ arbitrage ouvert. La kora est exclue (anachronisme très probable). Options :
-   - a) **Luth de type ngoni** : luths anciens et plausibles au Sahel, forme exacte en 1324 inconnue. Geste d'accordage très lisible.
-   - b) **Balafon** : attesté par Ibn Battuta (1352), mais encombrant, peu adapté à une conversation, et on ne peut pas « l'accorder » à la volée.
-   - c) **Sans instrument** : le griot joue avec un chasse-mouches ou frappe un petit hochet ; la parole prime.
-   - **Recommandation** : a). La kora peut rester l'instrument du **narrateur** des siècles plus tard, ce qui distingue bien les deux griots.
+11. **Instrument du griot PNJ** : ✅ décidé (2026-11-23) : luth de type ngoni (il l'accorde pendant l'animation « le griot réfléchit ») ; kora exclue pour 1324, éventuellement réservée au narrateur des siècles plus tard.
+12. **Hauteur de la maison du marchand** : ⚠️ ouvert (level design). Les sections D1-D3 totalisent 20 m, alors qu'une maison de Djenné fait 1 à 2 étages et que seule la mosquée domine. À trancher en greybox (cf. §7.3).
 
 ---
 
@@ -440,3 +443,4 @@ La slice est terminée quand **toutes** ces conditions sont vraies :
 |---|---|---|---|
 | v1 | 2026-11-23 | directeur-creatif | Première version, centrée vertical slice Djenné |
 | v1.1 | 2026-11-23 | historien-mande | Relecture historique : points ⚠️ validés ou passés en « inspiré de » ; arbitrages de design laissés ouverts avec options (§12, Q1, Q2, Q4, Q11) ; Aboubakari II présenté comme légende ; kora exclue pour 1324 |
+| v1.2 | 2026-11-23 | directeur-creatif | Décisions du développeur (§12) : Q1 djembé gardé et assumé par le narrateur (ensemble tambour + pilons + balafon reporté en Phase 2) ; Q2 hybride : escalade et combat sur une grande maison de marchand, refus de Sira au pied de la mosquée, mosquée en toile de fond (§3, §4.4, §6, §7, §8, §10, §11 mis à jour) ; Q4 Sira chasseuse, exception commentée par le griot en écho à la femme-buffle du Do (🔶), armes couteau de chasse + lance courte (bâton supprimé), texte accordé au féminin ; Q11 ngoni pour le griot PNJ ; nouvelle Q12 (hauteur de la maison du marchand) |
