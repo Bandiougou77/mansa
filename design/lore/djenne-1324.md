@@ -1,6 +1,6 @@
 # Djenné vers 1324 — fiche de référence (vertical slice)
 
-> Périmètre : une ruelle de Djenné + la façade de la grande mosquée.
+> Périmètre (GDD v1.2) : une ruelle, une maison de marchand escaladable, la grande mosquée en toile de fond (non escaladable ; Sira refuse de la gravir).
 > Rédigé par l'agent `historien-mande`. Voir aussi `glossaire.md`.
 >
 > Légende de certitude : **[attesté]** source médiévale ou archéologie · **[tradition]** tradition orale ou chronique tardive · **[hypothèse]** plausible, non prouvé · **[invention]** choix assumé pour le jeu.
@@ -78,11 +78,17 @@ Aucun auteur médiéval connu n'a décrit Djenné de l'intérieur au XIVe siècl
 - **[inconnu]** Plan, hauteur, nombre de tours, forme du mihrab : **aucune description médiévale**. On ignore si l'édifice de 1324 est celui de Konboro ou une reconstruction.
 - **[hypothèse]** Construction en banco et briques de terre modelées, toit plat sur poutres de rônier, salle hypostyle à piliers massifs, cour, probablement une tour-minaret ou une tour de mihrab pyramidale (comparaison avec le type de Djingareyber à Tombouctou, attribué à as-Sahili vers 1325-1327 [tradition]).
 
-### Option « inspirée de » pour la façade du jeu [invention assumée]
+### Option « inspirée de » pour la mosquée en toile de fond [invention assumée]
 - Façade **plus basse et plus massive** que l'actuelle, contreforts épais à profil légèrement conique, **une seule tour de mihrab** pyramidale côté est (ou une tour principale côté façade si la caméra l'exige), crénelage en pinacles arrondis sans œufs d'autruche, torons irréguliers.
 - Enduit plus irrégulier, traces de mains, zones érodées : on lit l'âge du bâtiment.
 - Sur un tertre surélevé (attesté pour la mosquée actuelle, logique contre la crue).
 - **Codex/griot** : « La mosquée que vous connaissez fut rebâtie bien plus tard. Celle-ci, je la raconte comme mes pères me l'ont racontée. » → transforme l'incertitude en élément narratif.
+
+### Le refus de Sira : ce qui est juste et ce qui ne l'est pas
+- **[attesté, moderne ; certain dans son principe pour 1324]** On monte sur la mosquée pour l'entretenir : les maçons et les habitants la gravissent au moment du crépissage. Grimper dessus **n'est donc pas tabou en soi**.
+- Ce qui serait inconvenant, c'est d'y mener une poursuite armée, d'y verser le sang ou d'y combattre. Le refus de Sira doit porter sur **cet usage**, et non sur le simple fait de grimper [invention assumée, cohérente avec l'éthique musulmane du lieu de prière].
+- Avantage : le pilier « crépissage » (Phase 2) pourra faire monter Sira sur la mosquée **pour la soigner**, sans contradiction.
+- À faire relire par un lecteur musulman, idéalement malien.
 
 ---
 
@@ -99,6 +105,25 @@ Aucun auteur médiéval connu n'a décrit Djenné de l'intérieur au XIVe siècl
 - **Ruelles** : étroites, sinueuses, sol de terre battue avec rigoles centrales (eaux usées), recoins, petites places, puits. Pas de pavés.
 - **Échelle** : 1 à 2 étages ; seule la mosquée domine.
 
+### 6 bis. La maison du marchand (bâtiment escaladable de la slice)
+
+Aucune maison de 1324 n'a été conservée ni décrite. La base est la maison djennenké des XIXe-XXe s., avec ses éléments les plus récents retirés, et la logique constructive du banco.
+
+| Élément | Proposition pour le jeu | Fiabilité |
+|---|---|---|
+| **Plan** | Vestibule d'entrée (pièce de réception des visiteurs, où l'on traite les affaires), puis **cour intérieure** autour de laquelle se répartissent pièces d'habitation, magasins (sel, tissu, grains), cuisine. Accès à l'étage par un escalier de banco intérieur, raide et étroit. | [hypothèse forte] (plan à cour, typique du Sahel urbain) |
+| **Étages** | Rez-de-chaussée + 1 étage ; éventuellement une petite pièce sur la terrasse. Façade, acrotère compris : environ **7-10 m**. 3 niveaux pleins : peu plausible. | [hypothèse] |
+| **Implantation** | En **bord de butte** : façade arrière au-dessus d'un mur de soutènement qui donne sur la berge ou le quai à pirogues. Cela offre une verticalité supplémentaire légitime (voir GDD §12, Q12). | [invention assumée], cohérente avec une ville bâtie sur butte au-dessus de la plaine inondable |
+| **Murs** | Briques rondes modelées (*djenné-ferey*), murs épais (40-60 cm), légèrement **fruités** (plus larges en bas), angles arrondis. | [hypothèse forte] |
+| **Terrasse** | Toit plat : poutres de rônier, nattes, couche de terre damée ; légère pente vers les gouttières. Parapet/acrotère de 0,8-1,2 m, à pinacles arrondis. Usages : séchage (grains, poisson, tissus), sommeil en saison chaude, jarres. | [hypothèse forte] |
+| **Toron** | Présents mais **moins nombreux et moins réguliers** que sur la mosquée, concentrés sur la façade principale et les contreforts d'angle. Leur rôle d'échafaudage justifie qu'ils soient à portée de main. | [attesté] (fonction) / [hypothèse] (densité) |
+| **Gouttières** | Demi-troncs évidés de rônier, ou tuyaux de terre cuite, saillants de 50-100 cm sous l'acrotère, avec une traînée d'érosion sombre sur le mur en dessous. Excellentes prises d'escalade et indicateurs visuels. | [hypothèse forte] (principe) ; terre cuite vs bois en 1324 incertain |
+| **Façade** | **Sobre** : 2-4 pilastres verticaux qui encadrent l'entrée et dépassent l'acrotère en pinacles ; porte basse en bois épais (une seule pièce ou des planches, avec ferrures simples possibles), petites ouvertures hautes, éventuellement une **petite fenêtre à claustra de terre**. Décor : quelques reliefs géométriques simples, empreintes de mains dans l'enduit. | [invention assumée] ; les façades « toucouleur » et « marocaine » détaillées sont des styles documentés aux XIXe-XXe s., à éviter |
+| **Signes de richesse** | Porte plus haute que la moyenne, enduit plus soigné, jarres de stockage nombreuses, nattes fines, coffres de bois, quelques tapis ou textiles nord-africains, barres de sel empilées dans le magasin. | [hypothèse] |
+| **Usure (avant crépissage)** | Fin de saison sèche : enduit écaillé, briques rondes visibles par endroits, rigoles creusées sous les gouttières. Cela justifie `BancoRelief` et `BancoFragile`. | [hypothèse forte] |
+
+**Le marchand** [invention assumée] : il peut être nono (soninké), mandingue (réseau *wangara*) ou nord-africain installé. Le choix colore les dialogues et la décoration ; un marchand nono est le plus « djennenké » selon la tradition de fondation.
+
 ---
 
 ## 7. Le crépissage annuel
@@ -113,7 +138,8 @@ Aucun auteur médiéval connu n'a décrit Djenné de l'intérieur au XIVe siècl
 
 ## 8. Vêtements, coiffures, armes
 
-### Chasseur donso (Sira)
+### Chasseuse donso (Sira)
+- **Décision du jeu** : Sira est une **femme**. C'est une exception assumée [invention], puisque les confréries donso sont traditionnellement masculines [attesté, ethnographie] ; le griot la commente en écho à la femme-buffle du Do [tradition, épopée de Soundiata]. Arme décidée : couteau de chasse + **lance courte**.
 - **Tunique** de coton tissé en bandes, teinte (ocre, brun, éventuellement bogolan [hypothèse]), couverte d'amulettes cousues en cuir, cornes, griffes, cauris. Pas de miroirs ni de perles de verre en abondance.
 - **Bonnet** de chasseur en coton ou cuir, parfois à oreillettes [tradition actuelle, hypothèse 1324].
 - **Armes** : **arc** et flèches (parfois empoisonnées [attesté régionalement]), **couteau** de chasse, lance légère, chasse-mouches à queue animale (signe de statut). Carquois en cuir.
@@ -182,13 +208,13 @@ Aucun auteur médiéval connu n'a décrit Djenné de l'intérieur au XIVe siècl
 
 ## Recommandations pour la vertical slice
 
-1. Assumer une **mosquée « médiévale imaginée »** : plus basse, massive, une tour principale, sans œufs d'autruche ; le griot signale qu'elle a été rebâtie plus tard.
+1. Mosquée en toile de fond : **« médiévale imaginée »**, plus basse, massive, une tour principale, sans œufs d'autruche ; le griot signale qu'elle a été rebâtie plus tard. Le refus de Sira porte sur la poursuite et la violence, pas sur le fait de grimper (§5).
 2. Représenter Djenné comme **cité autonome sous pression malienne**, avec un émissaire du mansa absent : tension politique crédible quelle que soit la lecture historique.
-3. Murs en briques **rondes modelées** et enduit irrégulier ; torons et gouttières comme prises d'escalade principales.
+3. Maison du marchand (§6 bis) : murs en briques **rondes modelées**, enduit irrégulier ; toron et gouttières comme prises principales ; R+1 en bord de butte plutôt qu'une maison de 20 m.
 4. Placer la slice en **fin de saison sèche, avant le crépissage** : murs érodés = plus de prises, harmattan, lumière poussiéreuse.
 5. Montrer le **fleuve Bani** et des pirogues depuis les toits : casser l'image de « savane uniforme ».
-6. Combat rythmique : garder le djembé mais **justifier** (le griot narrateur l'impose) ; ajouter pilons, balafon et tambours de garde dans le mixage.
-7. **Aucune kora** à Djenné 1324 ; elle peut rester l'instrument du narrateur des siècles plus tard.
+6. Combat rythmique (décidé) : djembé assumé par le narrateur ; ajouter pilons, balafon et tambours de garde dans le mixage.
+7. **Aucune kora** à Djenné 1324 : le griot PNJ joue du **ngoni** (décidé) ; la kora peut rester l'instrument du narrateur des siècles plus tard.
 8. Ennemis : 2 gardes ou bandits avec lance, bouclier de peau, couteau ou épée droite ; pas de mailles, pas de cavalerie.
 9. Ruelle multilingue : salutations en mandingue, réponses en soninké/bozo, prière en arabe (doublage à valider par des locuteurs).
 10. PNJ griot (API Claude) : lui fournir cette fiche comme contexte, avec consigne de signaler les incertitudes (« on raconte que… »).
