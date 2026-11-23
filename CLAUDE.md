@@ -91,13 +91,13 @@ _Dernière mise à jour : 2026-11-23 (session 1)._
 - **Phase** : 0 terminée → prochaine étape : Phase 1, tâche **A1** de `design/plan-phase1.md`.
 - **Fait** :
   - Environnement : Git 2.52, Git LFS 3.7.1, PHP 8.2, Composer 2.9, UE 5.8.4, VS 2026 (« Développement de jeux en C++ »).
-  - Dépôt Git (Gitflow : `main` + `develop`), `.gitignore` Unreal/Laravel, `.gitattributes` LFS, structure de dossiers.
+  - Dépôt Git (Gitflow : `main` + `develop`), remote GitHub privé `origin` (https://github.com/Bandiougou77/mansa), `.gitignore` Unreal/Laravel, `.gitattributes` LFS, structure de dossiers.
   - Projet UE 5.8 C++ `Mansa` (template Third Person, avec les variantes Combat/Platforming/SideScrolling ajoutées par le template) dans `/Mansa`, commité, assets en LFS.
   - `design/GDD.md` v1.2 (relu par historien-mande), `design/lore/glossaire.md`, `design/lore/djenne-1324.md`, `design/plan-phase1.md`.
   - Décisions : djembé gardé et assumé par le narrateur ; escalade + combat sur une maison de marchand, Sira refuse de grimper sur la mosquée (décor) ; Sira chasseuse, couteau + lance courte ; griot PNJ au ngoni.
 - **En cours** : —
 - **À faire bientôt** :
-  - Proposer un dépôt GitHub privé comme sauvegarde (attention au quota LFS gratuit).
+  - Surveiller le quota Git LFS gratuit de GitHub quand les vrais assets arriveront (~140 Mo fin Phase 0).
   - Trancher GDD Q12 (hauteur de la maison du marchand) en tâche C1.
   - Vérifier la disponibilité du plugin FMOD pour UE 5.8 (tâche E0).
 - **Points ouverts** :
