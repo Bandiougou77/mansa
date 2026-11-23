@@ -1,0 +1,47 @@
+{
+  "npc_id": "griot_djenne",
+  "version": "1.0.0",
+  "statut": "BROUILLON : à valider par historien-mande (miroir de DT_GriotFallback côté Unreal, tâche F3). Chaque réplique fait au plus 60 mots et ne contient aucun anachronisme.",
+  "usage": "Utilisées si : clé API absente, erreur réseau, timeout (6 s), réponse filtrée, quota atteint. Catégories voleur/djenne/chasseuse = les 3 questions suggérées (GDD §6.3) ; mosquee = dissuasion ; generiques = tout le reste ; limite = trop de questions.",
+  "mots_cles": {
+    "mosquee": ["mosquée", "mosquee", "minaret", "maison de dieu", "tour de la mosquée"],
+    "voleur": ["voleur", "turban", "indigo", "volé", "vole", "relique", "marchand", "poursui", "piste"],
+    "chasseuse": ["chasseuse", "donso", "femme", "fille", "regardes", "lance", "sira"],
+    "djenne": ["djenné", "djenne", "ville", "marché", "marche", "fleuve", "bani", "koy", "mansa", "moussa"]
+  },
+  "categories": {
+    "voleur": [
+      "L'homme au turban indigo ? Il a filé vers la place du marché, chasseuse. On l'a vu monter chez le marchand, la grande maison aux gouttières, à côté de la mosquée. Va, avant que le soleil ne monte.",
+      "Mes yeux sont vieux, mais ils ont vu un turban indigo fendre la foule vers la place. Cherche la grande maison du marchand, celle dont les gouttières jettent l'eau loin du mur, près de la mosquée.",
+      "Celui que tu chasses ne court pas vers le fleuve. Il est allé vers la place, puis chez le marchand, dans la grande maison aux gouttières. Les toron de sa façade te porteront."
+    ],
+    "djenne": [
+      "Djenné est un marché, chasseuse : le sel du nord y rencontre l'or du sud. On dit qu'elle ne s'est jamais soumise. Moi, je dis qu'elle écoute le Mali sans lui obéir tout à fait.",
+      "Les Bozo tiennent le fleuve, les Nono tiennent le marché, et la terre tient les maisons. Quand la crue vient, Djenné devient une île. Aujourd'hui la terre est sèche, et tes pieds te suffisent.",
+      "On raconte que le koy Konboro embrassa l'islam et fit raser son palais pour bâtir la mosquée. Je le chante comme on me l'a chanté. Mais ton voleur, lui, n'attendra pas la fin du chant."
+    ],
+    "chasseuse": [
+      "Une chasseuse ? Les donso de ce pays auraient froncé les sourcils. Moi, je chante ce qui est rare.",
+      "Je regarde tes amulettes et ta lance, fille des donso. Les chasseurs n'ouvrent guère leurs rangs aux femmes. Celle qui y entre porte un nom qu'un jeli doit retenir.",
+      "Souviens-toi de la femme-buffle du Do : les chasseurs ne l'ont vaincue que parce qu'elle leur a livré son secret. Toi, tu portes la lance. Va, et que ta parole soit aussi droite que ton arme."
+    ],
+    "mosquee": [
+      "On ne monte sur la maison de Dieu que pour la soigner, au temps du crépissage. Pour courir après un voleur, le marchand a des murs solides.",
+      "Les maçons gravissent la mosquée pour lui rendre son enduit, chaque année. Toi, tu poursuis un voleur, la lance à la main : ce chemin-là n'est pas pour ta course. Prends la maison du marchand.",
+      "La mosquée veille sur nous depuis son tertre. On n'y porte ni la course ni le sang. Les toron du marchand, eux, ne demandent qu'une main ferme."
+    ],
+    "generiques": [
+      "Ces paroles-là ne se disent pas sur la place du marché. Parlons plutôt de celui que tu poursuis : il est chez le marchand, la grande maison aux gouttières.",
+      "Ta langue court plus vite que tes pieds, chasseuse. Le voleur, lui, ne t'attend pas : va vers la place, puis chez le marchand.",
+      "Je ne connais pas ces mots-là. Je connais les noms, les lignées et les chemins de Djenné. Et le chemin du voleur passe par la maison du marchand.",
+      "Un jeli parle quand la parole est mûre. La mienne te dit ceci : la grande maison aux gouttières, à côté de la mosquée.",
+      "Laisse-moi accorder mon ngoni… Voilà. Ce que je sais tient en peu de mots : le turban indigo est monté chez le marchand.",
+      "Les anciens disent que la parole est un fleuve : on ne la remonte pas. Descends vers la place, chasseuse, et lève les yeux vers la maison du marchand."
+    ],
+    "limite": [
+      "Doucement, chasseuse. Même un jeli a besoin de reprendre son souffle. Laisse ma parole mûrir un instant.",
+      "Mon ngoni s'est désaccordé à force de questions. Laisse-moi le reprendre, puis nous parlerons.",
+      "Trop de paroles fatiguent l'oreille. Va, poursuis ton voleur ; je serai encore là."
+    ]
+  }
+}
