@@ -79,3 +79,6 @@ desktop.ini
 .DS_Store
 *.tmp
 *.log
+
+# Worktrees temporaires des agents Claude Code
+/.claude/worktrees/
