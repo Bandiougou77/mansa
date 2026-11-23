@@ -22,6 +22,9 @@
 #include "EngineUtils.h"
 #include "TimerManager.h"
 #include "Engine/DataTable.h"
+#include "MansaReglagesJoueur.h"
+#include "MansaControlesLibrary.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 AMansaCharacter::AMansaCharacter()
 {
@@ -41,6 +44,8 @@ AMansaCharacter::AMansaCharacter()
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+	// Accroupi (C) : la capsule se réduit ; vitesse accroupie réglable dans BP_Sira (CMC).
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -181,7 +186,8 @@ void AMansaCharacter::EtapeTestEscalade()
 			}
 		}
 		const float Pieds = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
-		UE_LOG(LogMansa, Log, TEXT("Test escalade : OK  %-16s (pieds Z=%.0f)"), *Precedente, Pieds);
+		UE_LOG(LogMansa, Log, TEXT("Test escalade : OK  %-16s (pieds Z=%.0f)  prompts clavier %s / manette %s"), *Precedente, Pieds,
+			*DecrirePrompts(EMansaPeripherique::ClavierSouris), *DecrirePrompts(EMansaPeripherique::Manette));
 	}
 	if (!EtapesTestEscalade.IsValidIndex(IndexTestEscalade))
 	{
@@ -221,6 +227,8 @@ void AMansaCharacter::EtapeTestEscalade()
 			GetCharacterMovement()->StopMovementImmediately();
 			TeleportTo(Depart, FRotator(0.f, (-N).Rotation().Yaw, 0.f));
 			GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+			UE_LOG(LogMansa, Log, TEXT("Test escalade : au pied de %s, prompts clavier %s / manette %s"), *Id,
+				*DecrirePrompts(EMansaPeripherique::ClavierSouris), *DecrirePrompts(EMansaPeripherique::Manette));
 			bLance = Climbing->TenterAccroche();
 		}
 		else if (Etape.StartsWith(TEXT("glisser:")))
@@ -471,6 +479,12 @@ void AMansaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	BindIfValid(Input, LockOnAction, ETriggerEvent::Started, &AMansaCharacter::OnLockOn);
 	BindIfValid(Input, DropHoldAction, ETriggerEvent::Started, &AMansaCharacter::OnDropHold);
 	BindIfValid(Input, PauseAction, ETriggerEvent::Started, &AMansaCharacter::OnPause);
+	BindIfValid(Input, CrouchAction, ETriggerEvent::Started, &AMansaCharacter::OnCrouchToggle);
+	BindIfValid(Input, ParryAction, ETriggerEvent::Started, &AMansaCharacter::OnParry);
+	BindIfValid(Input, HunterSenseAction, ETriggerEvent::Started, &AMansaCharacter::OnHunterSense);
+	BindIfValid(Input, MapAction, ETriggerEvent::Started, &AMansaCharacter::OnMap);
+	BindIfValid(Input, JournalAction, ETriggerEvent::Started, &AMansaCharacter::OnJournal);
+	BindIfValid(Input, InventoryAction, ETriggerEvent::Started, &AMansaCharacter::OnInventory);
 }
 
 void AMansaCharacter::BindIfValid(UEnhancedInputComponent* Input, UInputAction* Action, ETriggerEvent Event, void (AMansaCharacter::*Func)(const FInputActionValue&))
@@ -485,8 +499,102 @@ void AMansaCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
 
-	// Le contexte d'exploration est la base : on l'ajoute dès qu'un joueur local possède Sira.
+	// Le contexte d'exploration est la base : on l'ajoute dès qu'un joueur local possède Sira,
+	// avec le contexte clavier de la bonne disposition (AZERTY / QWERTY).
+	EnregistrerContextesRemappables();
 	SetContextActive(ExplorationContext, ExplorationPriority, true);
+	AppliquerDispositionClavier();
+}
+
+void AMansaCharacter::EnregistrerContextesRemappables()
+{
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC || !PC->IsLocalController())
+	{
+		return;
+	}
+	const UEnhancedInputLocalPlayerSubsystem* Sub = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+	UEnhancedInputUserSettings* Reglages = Sub ? Sub->GetUserSettings() : nullptr;
+	if (!Reglages)
+	{
+		UE_LOG(LogMansa, Warning, TEXT("Contrôles : réglages utilisateur Enhanced Input désactivés (DefaultInput.ini, bEnableUserSettings) : remappage indisponible."));
+		return;
+	}
+	int32 Nombre = 0;
+	for (const UInputMappingContext* Contexte : { ExplorationContext.Get(), ClavierAzertyContext.Get(), ClavierQwertyContext.Get(), EscaladeContext.Get(), CombatContext.Get() })
+	{
+		if (Contexte && Reglages->RegisterInputMappingContext(Contexte))
+		{
+			++Nombre;
+		}
+	}
+	UE_LOG(LogMansa, Log, TEXT("Contrôles : %d contexte(s) déclarés pour le remappage"), Nombre);
+}
+
+void AMansaCharacter::AppliquerDispositionClavier()
+{
+	const EMansaDispositionClavier Disposition = UMansaReglagesJoueur::Get()->GetDispositionEffective();
+	const bool bAzerty = Disposition == EMansaDispositionClavier::AZERTY;
+	// Un seul des deux à la fois : sinon le A d'AZERTY (parer) serait aussi le « gauche » du QWERTY.
+	SetContextActive(bAzerty ? ClavierQwertyContext : ClavierAzertyContext, ExplorationPriority, false);
+	SetContextActive(bAzerty ? ClavierAzertyContext : ClavierQwertyContext, ExplorationPriority, true);
+	UE_LOG(LogMansa, Log, TEXT("Contrôles : clavier %s (%s)"), bAzerty ? TEXT("AZERTY") : TEXT("QWERTY"),
+		UMansaReglagesJoueur::Get()->DispositionClavier == EMansaDispositionClavier::Auto ? TEXT("détecté") : TEXT("choisi dans les réglages"));
+}
+
+TArray<const UInputAction*> AMansaCharacter::GetToutesLesActions() const
+{
+	TArray<const UInputAction*> Actions;
+	const UInputAction* Liste[] = { MoveAction, LookAction, JumpAction, SprintAction.Get(), SprintToggleAction.Get(), WalkAction.Get(),
+		CrouchAction.Get(), InteractAction.Get(), AttackLightAction.Get(), AttackHeavyAction.Get(), ParryAction.Get(), DodgeAction.Get(),
+		LockOnAction.Get(), HunterSenseAction.Get(), DropHoldAction.Get(), MapAction.Get(), JournalAction.Get(), InventoryAction.Get(), PauseAction.Get() };
+	for (const UInputAction* A : Liste)
+	{
+		if (A)
+		{
+			Actions.Add(A);
+		}
+	}
+	return Actions;
+}
+
+FString AMansaCharacter::DecrirePrompts(EMansaPeripherique Peripherique) const
+{
+	TArray<FMansaPrompt> Prompts;
+	GetPromptsContextuels(Prompts);
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+	FString Texte;
+	for (const FMansaPrompt& P : Prompts)
+	{
+		FKey Touche;
+		UTexture2D* Icone = nullptr;
+		const FString Libelle = UMansaControlesLibrary::TrouverToucheAction(PC, P.Action, Peripherique, Touche)
+			? UMansaControlesLibrary::LibelleTouche(Touche, UMansaReglagesJoueur::Get()->StyleManette, Icone).ToString() : FString(TEXT("?"));
+		Texte += FString::Printf(TEXT("[%s] %s  "), *Libelle, *P.Verbe.ToString());
+	}
+	return Texte.IsEmpty() ? FString(TEXT("(aucun)")) : Texte;
+}
+
+void AMansaCharacter::GetPromptsContextuels(TArray<FMansaPrompt>& OutPrompts) const
+{
+	OutPrompts.Reset();
+	if (!Climbing)
+	{
+		return;
+	}
+	if (Climbing->EstSuspendu())
+	{
+		const UMansaPriseComponent* Prise = Climbing->GetPriseCourante();
+		const bool bMantle = Prise && Prise->PeutMantle();
+		OutPrompts.Add({ JumpAction, bMantle ? NSLOCTEXT("Mansa", "PromptHisser", "Se hisser") : NSLOCTEXT("Mansa", "PromptSauter", "Sauter") });
+		OutPrompts.Add({ DropHoldAction, NSLOCTEXT("Mansa", "PromptLacher", "Lâcher") });
+		return;
+	}
+	FVector Point;
+	if (Climbing->TrouverPriseDepuisSol(Point))
+	{
+		OutPrompts.Add({ JumpAction, NSLOCTEXT("Mansa", "PromptGrimper", "Grimper") });
+	}
 }
 
 void AMansaCharacter::SetContextActive(UInputMappingContext* Context, int32 Priority, bool bActive)
@@ -502,17 +610,20 @@ void AMansaCharacter::SetContextActive(UInputMappingContext* Context, int32 Prio
 	}
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
+		// Reconstruction immédiate : les prompts et un changement de disposition sont justes dès cette frame.
+		FModifyContextOptions Immediat;
+		Immediat.bForceImmediately = true;
 		if (bActive)
 		{
 			if (!Subsystem->HasMappingContext(Context))
 			{
-				Subsystem->AddMappingContext(Context, Priority);
+				Subsystem->AddMappingContext(Context, Priority, Immediat);
 				UE_LOG(LogMansa, Log, TEXT("Contexte d'entrée ajouté : %s (priorité %d)"), *GetNameSafe(Context), Priority);
 			}
 		}
 		else
 		{
-			Subsystem->RemoveMappingContext(Context);
+			Subsystem->RemoveMappingContext(Context, Immediat);
 			UE_LOG(LogMansa, Log, TEXT("Contexte d'entrée retiré : %s"), *GetNameSafe(Context));
 		}
 	}
@@ -618,7 +729,61 @@ void AMansaCharacter::OnAttackHeavy(const FInputActionValue& Value)
 
 void AMansaCharacter::OnDodge(const FInputActionValue& Value)
 {
-	DebugInput(TEXT("Esquive"));
+	// En escalade, B / Rond lâche la prise (IMC_Escalade, prioritaire) ; Alt n'a pas d'effet.
+	if (Climbing && Climbing->EstEnEscalade())
+	{
+		return;
+	}
+	DebugInput(TEXT("Esquive / roulade (combat : bloc E)"));
+}
+
+void AMansaCharacter::OnCrouchToggle(const FInputActionValue& Value)
+{
+	if (Climbing && Climbing->EstEnEscalade())
+	{
+		return;
+	}
+	if (bIsCrouched)
+	{
+		UnCrouch();
+		DebugInput(TEXT("Se relever"));
+	}
+	else
+	{
+		Crouch();
+		DebugInput(TEXT("S'accroupir"));
+	}
+}
+
+void AMansaCharacter::OnParry(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Parer / bloquer (combat : bloc E)"));
+}
+
+void AMansaCharacter::OnHunterSense(const FInputActionValue& Value)
+{
+	// Première version : révèle les prises d'escalade. Traces et ennemis viendront avec leurs systèmes.
+	bSensDuChasseur = !bSensDuChasseur;
+	if (UMansaPrisesSubsystem* Sub = UMansaPrisesSubsystem::Get(this))
+	{
+		Sub->SetDebugPrises(bSensDuChasseur);
+	}
+	DebugInput(FString::Printf(TEXT("Sens du chasseur : %s"), bSensDuChasseur ? TEXT("actif") : TEXT("inactif")));
+}
+
+void AMansaCharacter::OnMap(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Carte (écran à onglets : bloc H)"));
+}
+
+void AMansaCharacter::OnJournal(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Journal (bloc H)"));
+}
+
+void AMansaCharacter::OnInventory(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Inventaire (bloc H)"));
 }
 
 void AMansaCharacter::OnLockOn(const FInputActionValue& Value)

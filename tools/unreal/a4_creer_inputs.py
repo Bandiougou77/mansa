@@ -1,24 +1,28 @@
 """
-MANSA — Tâche A4 : crée les Input Actions et les contextes Enhanced Input (GDD §4.2),
-puis les assigne à BP_Sira.
+MANSA — Tâches A4 + A6 : crée les Input Actions et les contextes Enhanced Input
+(conventions AAA, liste complète dans design/controles.md), puis les assigne à BP_Sira.
 
-Ce script est IDEMPOTENT : relancé, il recrée les mappings des contextes à l'identique
-(les remaps faits à la main dans les IMC seront donc écrasés : modifie plutôt ce script).
+Ce script est IDEMPOTENT : relancé, il recrée les mappings des contextes à l'identique.
+Les remaps du JOUEUR ne sont pas touchés (ils vivent dans ses réglages Enhanced Input).
 
 Crée :
-  /Game/Mansa/Input/Actions/IA_*   (Move, Look, Jump, Sprint, SprintToggle, Walk, Interact,
-                                    AttackLight, AttackHeavy, Dodge, LockOn, DropHold, Pause)
-  /Game/Mansa/Input/IMC_Exploration (priorité 0, toujours actif)
-  /Game/Mansa/Input/IMC_Escalade    (priorité 1, ajouté pendant l'escalade)
-  /Game/Mansa/Input/IMC_Combat      (priorité 2, ajouté pendant un combat)
+  /Game/Mansa/Input/Actions/IA_*      (19 actions, cf. ACTIONS)
+  /Game/Mansa/Input/IMC_Exploration   (priorité 0, toujours actif : touches communes + manette)
+  /Game/Mansa/Input/IMC_Clavier_AZERTY (priorité 0, actif si clavier AZERTY : ZQSD, A = parer)
+  /Game/Mansa/Input/IMC_Clavier_QWERTY (priorité 0, actif si clavier QWERTY : WASD, Q = parer)
+  /Game/Mansa/Input/IMC_Escalade      (priorité 1, pendant l'escalade : C / B = lâcher)
+  /Game/Mansa/Input/IMC_Combat        (priorité 2, réservé au bloc E, vide pour l'instant)
 
-Clavier : AZERTY (ZQSD) ET QWERTY (WASD) sont mappés tous les deux (Unreal lit la
-lettre imprimée sur la touche : Z en AZERTY, W en QWERTY ; aucune des deux ne gêne l'autre).
-Manette : prioritaire. « Interagir » (exploration) et « Attaque légère » (combat)
-partagent X/Carré : IMC_Combat a une priorité plus haute et consomme la touche.
+AZERTY / QWERTY : Unreal lit la LETTRE de la touche (Z en AZERTY = W en QWERTY, même position).
+Les deux profils ne sont jamais actifs ensemble (sinon le A d'AZERTY, « parer », serait aussi
+le « gauche » du QWERTY). Sira active le bon profil au démarrage (détection Windows ou réglage).
 
-Assigne aussi les actions/contextes sur le CDO de BP_Sira et vide les IMC du template
-dans BP_MansaPlayerController (c'est maintenant le personnage qui gère ses contextes).
+Conflits voulus et résolus par la priorité : C (s'accroupir) et B/Rond (esquive) deviennent
+« lâcher » en escalade, car IMC_Escalade est prioritaire et consomme la touche.
+
+Remappage (menu Options, bloc H) : chaque mapping porte un nom stable (PlayerMappableKeySettings,
+ex. « Sauter », « Sauter_Manette », « Avancer_AZERTY ») et une catégorie d'affichage. Les sticks,
+la souris et les flèches ne sont pas remappables.
 
 Lancement dans l'éditeur (barre « Cmd ») :
   py "C:/Dev/Mansa/tools/unreal/a4_creer_inputs.py"
@@ -46,15 +50,21 @@ ACTIONS = {
     "IA_Move": (AXE2D, "Se déplacer"),
     "IA_Look": (AXE2D, "Caméra (souris + stick droit)"),
     "IA_Jump": (BOOL, "Sauter / grimper / saut d'escalade"),
-    "IA_Sprint": (BOOL, "Courir (maintien clavier)"),
+    "IA_Sprint": (BOOL, "Courir / parkour rapide (maintien)"),
     "IA_SprintToggle": (BOOL, "Courir (bascule manette L3)"),
     "IA_Walk": (BOOL, "Marcher lentement (maintien)"),
-    "IA_Interact": (BOOL, "Interagir / parler"),
+    "IA_Crouch": (BOOL, "S'accroupir (bascule)"),
+    "IA_Interact": (BOOL, "Interagir (parler, ramasser, ouvrir)"),
     "IA_AttackLight": (BOOL, "Attaque légère"),
     "IA_AttackHeavy": (BOOL, "Attaque lourde"),
-    "IA_Dodge": (BOOL, "Esquive"),
+    "IA_Parry": (BOOL, "Parer / bloquer"),
+    "IA_Dodge": (BOOL, "Esquive / roulade"),
     "IA_LockOn": (BOOL, "Verrouiller une cible"),
+    "IA_HunterSense": (BOOL, "Sens du chasseur"),
     "IA_DropHold": (BOOL, "Lâcher une prise"),
+    "IA_Map": (BOOL, "Carte"),
+    "IA_Journal": (BOOL, "Journal"),
+    "IA_Inventory": (BOOL, "Inventaire"),
     "IA_Pause": (BOOL, "Pause"),
 }
 
@@ -65,53 +75,75 @@ ACTIONS = {
 #  "droite" : touche -> +X (rien)
 #  "zone_morte" : zone morte radiale 0,2 (sticks)
 #  "inverser_y" : negate Y seulement (souris, comme le template)
-DEPLACEMENT_CLAVIER = [
-    # AZERTY
-    ("Z", "IA_Move", ["avant"]), ("S", "IA_Move", ["arriere"]),
-    ("Q", "IA_Move", ["gauche"]), ("D", "IA_Move", ["droite"]),
-    # QWERTY (S et D sont communs)
-    ("W", "IA_Move", ["avant"]), ("A", "IA_Move", ["gauche"]),
-    # Flèches
-    ("Up", "IA_Move", ["avant"]), ("Down", "IA_Move", ["arriere"]),
-    ("Left", "IA_Move", ["gauche"]), ("Right", "IA_Move", ["droite"]),
-]
+#
+# Mapping : (touche, action, modificateurs, nom remappable ou None, libellé affiché, catégorie)
+DEP, ACT, CMB, ESC, MEN = "Déplacement", "Actions", "Combat", "Escalade", "Menus"
+
+
+def clavier_disposition(suffixe, avant, gauche, parer):
+    return [
+        (avant, "IA_Move", ["avant"], "Avancer_" + suffixe, "Avancer", DEP),
+        ("S", "IA_Move", ["arriere"], "Reculer_" + suffixe, "Reculer", DEP),
+        (gauche, "IA_Move", ["gauche"], "Gauche_" + suffixe, "Aller à gauche", DEP),
+        ("D", "IA_Move", ["droite"], "Droite_" + suffixe, "Aller à droite", DEP),
+        (parer, "IA_Parry", [], "Parer_" + suffixe, "Parer / bloquer", CMB),
+    ]
+
 
 CONTEXTES = {
-    "IMC_Exploration": DEPLACEMENT_CLAVIER + [
-        ("Gamepad_Left2D", "IA_Move", ["zone_morte"]),
-        ("Mouse2D", "IA_Look", ["inverser_y"]),
-        ("Gamepad_Right2D", "IA_Look", ["zone_morte"]),
-        ("SpaceBar", "IA_Jump", []),
-        ("Gamepad_FaceButton_Bottom", "IA_Jump", []),
-        ("LeftShift", "IA_Sprint", []),
-        ("Gamepad_LeftThumbstick", "IA_SprintToggle", []),
-        ("LeftAlt", "IA_Walk", []),
-        ("E", "IA_Interact", []),
-        ("Gamepad_FaceButton_Left", "IA_Interact", []),
-        ("Escape", "IA_Pause", []),
-        ("Gamepad_Special_Right", "IA_Pause", []),
+    "IMC_Exploration": [
+        # Flèches, sticks et souris : non remappables
+        ("Up", "IA_Move", ["avant"], None, "", DEP),
+        ("Down", "IA_Move", ["arriere"], None, "", DEP),
+        ("Left", "IA_Move", ["gauche"], None, "", DEP),
+        ("Right", "IA_Move", ["droite"], None, "", DEP),
+        ("Gamepad_Left2D", "IA_Move", ["zone_morte"], None, "", DEP),
+        ("Mouse2D", "IA_Look", ["inverser_y"], None, "", DEP),
+        ("Gamepad_Right2D", "IA_Look", ["zone_morte"], None, "", DEP),
+        # Clavier / souris (indépendants de la disposition)
+        ("SpaceBar", "IA_Jump", [], "Sauter", "Sauter / grimper", DEP),
+        ("LeftShift", "IA_Sprint", [], "Courir", "Courir / parkour rapide", DEP),
+        ("LeftControl", "IA_Walk", [], "Marcher", "Marcher lentement", DEP),
+        ("C", "IA_Crouch", [], "Accroupir", "S'accroupir", DEP),
+        ("E", "IA_Interact", [], "Interagir", "Interagir", ACT),
+        ("V", "IA_HunterSense", [], "SensChasseur", "Sens du chasseur", ACT),
+        ("LeftMouseButton", "IA_AttackLight", [], "AttaqueLegere", "Attaque légère", CMB),
+        ("RightMouseButton", "IA_AttackHeavy", [], "AttaqueLourde", "Attaque lourde", CMB),
+        ("LeftAlt", "IA_Dodge", [], "Esquiver", "Esquive / roulade", CMB),
+        ("MiddleMouseButton", "IA_LockOn", [], "Verrouiller", "Verrouiller la cible", CMB),
+        ("M", "IA_Map", [], "Carte", "Carte", MEN),
+        ("J", "IA_Journal", [], "Journal", "Journal", MEN),
+        ("I", "IA_Inventory", [], "Inventaire", "Inventaire", MEN),
+        ("Escape", "IA_Pause", [], "Pause", "Pause", MEN),
+        # Manette (Xbox / PlayStation)
+        ("Gamepad_FaceButton_Bottom", "IA_Jump", [], "Sauter_Manette", "Sauter / grimper", DEP),
+        ("Gamepad_LeftThumbstick", "IA_SprintToggle", [], "Courir_Manette", "Courir", DEP),
+        ("Gamepad_DPad_Up", "IA_Interact", [], "Interagir_Manette", "Interagir", ACT),
+        ("Gamepad_RightThumbstick", "IA_HunterSense", [], "SensChasseur_Manette", "Sens du chasseur", ACT),
+        ("Gamepad_FaceButton_Left", "IA_AttackLight", [], "AttaqueLegere_Manette", "Attaque légère", CMB),
+        ("Gamepad_FaceButton_Top", "IA_AttackHeavy", [], "AttaqueLourde_Manette", "Attaque lourde", CMB),
+        ("Gamepad_RightShoulder", "IA_Parry", [], "Parer_Manette", "Parer / bloquer", CMB),
+        ("Gamepad_FaceButton_Right", "IA_Dodge", [], "Esquiver_Manette", "Esquive / roulade", CMB),
+        ("Gamepad_LeftShoulder", "IA_LockOn", [], "Verrouiller_Manette", "Verrouiller la cible", CMB),
+        ("Gamepad_Special_Left", "IA_Map", [], "Carte_Manette", "Carte", MEN),
+        ("Gamepad_Special_Right", "IA_Pause", [], "Pause_Manette", "Pause", MEN),
     ],
+    "IMC_Clavier_AZERTY": clavier_disposition("AZERTY", "Z", "Q", "A"),
+    "IMC_Clavier_QWERTY": clavier_disposition("QWERTY", "W", "A", "Q"),
     "IMC_Escalade": [
-        ("C", "IA_DropHold", []),
-        ("Gamepad_FaceButton_Right", "IA_DropHold", []),
+        ("C", "IA_DropHold", [], "Lacher", "Lâcher la prise", ESC),
+        ("Gamepad_FaceButton_Right", "IA_DropHold", [], "Lacher_Manette", "Lâcher la prise", ESC),
     ],
-    "IMC_Combat": [
-        ("LeftMouseButton", "IA_AttackLight", []),
-        ("Gamepad_FaceButton_Left", "IA_AttackLight", []),
-        ("RightMouseButton", "IA_AttackHeavy", []),
-        ("Gamepad_FaceButton_Top", "IA_AttackHeavy", []),
-        ("LeftControl", "IA_Dodge", []),
-        ("LeftShift", "IA_Dodge", []),
-        ("Gamepad_FaceButton_Right", "IA_Dodge", []),
-        ("MiddleMouseButton", "IA_LockOn", []),
-        ("Gamepad_RightThumbstick", "IA_LockOn", []),
-    ],
+    # Réservé au bloc E (actions propres au combat) : vide pour l'instant.
+    "IMC_Combat": [],
 }
 
 DESCRIPTIONS_IMC = {
-    "IMC_Exploration": "Exploration (toujours actif)",
-    "IMC_Escalade": "Escalade (par-dessus l'exploration)",
-    "IMC_Combat": "Combat (par-dessus l'exploration)",
+    "IMC_Exploration": "Exploration : touches communes clavier/souris + manette (toujours actif)",
+    "IMC_Clavier_AZERTY": "Clavier AZERTY : ZQSD + A = parer (actif si AZERTY)",
+    "IMC_Clavier_QWERTY": "Clavier QWERTY : WASD + Q = parer (actif si QWERTY)",
+    "IMC_Escalade": "Escalade : C / B = lâcher (prioritaire sur l'exploration)",
+    "IMC_Combat": "Combat (bloc E)",
 }
 
 # Propriété C++ d'AMansaCharacter -> asset
@@ -129,6 +161,14 @@ PROPRIETES_SIRA = {
     "lock_on_action": DOSSIER_ACTIONS + "/IA_LockOn",
     "drop_hold_action": DOSSIER_ACTIONS + "/IA_DropHold",
     "pause_action": DOSSIER_ACTIONS + "/IA_Pause",
+    "crouch_action": DOSSIER_ACTIONS + "/IA_Crouch",
+    "parry_action": DOSSIER_ACTIONS + "/IA_Parry",
+    "hunter_sense_action": DOSSIER_ACTIONS + "/IA_HunterSense",
+    "map_action": DOSSIER_ACTIONS + "/IA_Map",
+    "journal_action": DOSSIER_ACTIONS + "/IA_Journal",
+    "inventory_action": DOSSIER_ACTIONS + "/IA_Inventory",
+    "clavier_azerty_context": DOSSIER_IMC + "/IMC_Clavier_AZERTY",
+    "clavier_qwerty_context": DOSSIER_IMC + "/IMC_Clavier_QWERTY",
     "exploration_context": DOSSIER_IMC + "/IMC_Exploration",
     "escalade_context": DOSSIER_IMC + "/IMC_Escalade",
     "combat_context": DOSSIER_IMC + "/IMC_Combat",
@@ -197,13 +237,31 @@ def creer_modificateur(code, outer):
     raise ValueError("Modificateur inconnu : " + code)
 
 
+def configurer_remap(mapping, imc, nom, libelle, categorie, noms_vus):
+    """Nom stable + libellé pour le menu de remappage ; None = non remappable."""
+    comportements = unreal.PlayerMappableKeySettingBehaviors
+    if nom is None:
+        mapping.set_editor_property("setting_behavior", comportements.IGNORE_SETTINGS)
+        return
+    if nom in noms_vus:
+        raise ValueError("Nom remappable en double : " + nom)
+    noms_vus.add(nom)
+    reglages = unreal.new_object(unreal.PlayerMappableKeySettings, imc)
+    reglages.set_editor_property("name", nom)
+    reglages.set_editor_property("display_name", libelle)
+    reglages.set_editor_property("display_category", categorie)
+    mapping.set_editor_property("setting_behavior", comportements.OVERRIDE_SETTINGS)
+    mapping.set_editor_property("player_mappable_key_settings", reglages)
+
+
 def creer_contextes(actions):
     for nom_imc, liste in CONTEXTES.items():
         imc = obtenir_ou_creer(nom_imc, DOSSIER_IMC, unreal.InputMappingContext, unreal.InputMappingContext_Factory())
         if imc is None:
             return False
         mappings = []
-        for nom_touche, nom_action, codes in liste:
+        noms_vus = set()
+        for nom_touche, nom_action, codes, nom_remap, libelle, categorie in liste:
             m = unreal.EnhancedActionKeyMapping()
             touche = unreal.Key()
             touche.set_editor_property("key_name", nom_touche)
@@ -213,6 +271,7 @@ def creer_contextes(actions):
             for code in codes:
                 mods += creer_modificateur(code, imc)
             m.set_editor_property("modifiers", mods)
+            configurer_remap(m, imc, nom_remap, libelle, categorie, noms_vus)
             mappings.append(m)
         donnees = imc.get_editor_property("default_key_mappings")
         donnees.set_editor_property("mappings", mappings)
@@ -220,7 +279,8 @@ def creer_contextes(actions):
         imc.set_editor_property("context_description", DESCRIPTIONS_IMC[nom_imc])
         EAL.save_loaded_asset(imc, only_if_is_dirty=False)
         relu = imc.get_editor_property("default_key_mappings").get_editor_property("mappings")
-        log("%s : %d mappings" % (nom_imc, len(relu)))
+        remappables = [r for r in relu if r.get_editor_property("player_mappable_key_settings") is not None]
+        log("%s : %d mappings dont %d remappables" % (nom_imc, len(relu), len(remappables)))
     return True
 
 

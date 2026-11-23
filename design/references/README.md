@@ -3,6 +3,7 @@
 > Planches fournies par le développeur le 2026-11-23 (concept art généré par IA, **pas** des captures du jeu).
 > Elles fixent un **niveau** (lumière, densité, échelle, lisibilité du HUD), **pas** un contenu à reproduire.
 > Analyse : skill `direction-artistique-aaa`. Relecture historique : `historien-mande` (sans recherche en ligne ; points incertains signalés).
+> ✅ **2026-11-23 : toutes les corrections de la section 2 sont validées par le développeur** (Sira femme, « L'Héritier du Fleuve », banco, pirogues à perche, rien de trop proche d'Assassin's Creed). Lumière du beauty shot : aube par défaut, choix aube / couchant à confirmer.
 
 | Fichier | Contenu (4 vignettes) |
 |---|---|
