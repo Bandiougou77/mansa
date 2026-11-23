@@ -330,7 +330,9 @@ class GenerateurGreybox:
                     continue
                 self.appliquer_materiau(acteur, pr["materiau"])
                 tags = ["Prise", f"PriseType_{pr['type']}", f"PriseId_{pr['id']}", f"Prise:{pr['type']}",
-                        f"Section_{pr['section']}", pr["id"]]
+                        f"Section_{pr['section']}", pr["id"],
+                        # Normale explicite : un cylindre couché (Pitch 90) rend le Yaw de l'acteur ambigu.
+                        f"PriseNormaleYaw_{yaw:g}"]
                 if pr.get("sous_type"):
                     tags.append(f"PriseSousType_{pr['sous_type']}")
                 if pr.get("mantle_autorise") is True:

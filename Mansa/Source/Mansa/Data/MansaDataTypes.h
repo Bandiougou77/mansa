@@ -92,3 +92,76 @@ struct FMansaCameraProfileRow : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Camera", meta=(ClampMin="0", Units="s"))
 	float DureeTransition = 0.4f;
 };
+
+/**
+ * Types de prises d'escalade (GDD §4.4). Le nom de chaque valeur est aussi le nom de la
+ * ligne correspondante dans DT_PrisesEscalade, et le suffixe du tag acteur PriseType_<Type>.
+ */
+UENUM(BlueprintType)
+enum class EMansaPriseType : uint8
+{
+	/** Poutre de rônier ou gouttière : prise sûre, suspension illimitée. */
+	Toron,
+	/** Arête, saillie de contrefort, rebord de fenêtre en banco : prise standard. */
+	BancoRelief,
+	/** Banco érodé : s'effrite après DelaiEffritement secondes de suspension. */
+	BancoFragile,
+	/** Rebord horizontal : déplacement latéral + mantle vers le haut (si autorisé). */
+	Corniche,
+	/** Réservé Phase 2 (saisons, crépi frais) : non saisissable dans la slice. */
+	Reserve_CrepiFrais
+};
+
+/**
+ * Une ligne de DT_PrisesEscalade (GDD §4.4, fiche djenne-slice §10). Nom de ligne = type de prise.
+ * Les distances de saut sont celles de la prise VISÉE.
+ */
+USTRUCT(BlueprintType)
+struct FMansaPriseRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	/** Faux = la prise est ignorée par l'escalade (ex. Reserve_CrepiFrais). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade")
+	bool bSaisissable = true;
+
+	/** Écart vertical max pour sauter vers cette prise. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm"))
+	float DistanceMaxVerticale = 150.f;
+
+	/** Écart horizontal max pour sauter vers cette prise. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm"))
+	float DistanceMaxLaterale = 200.f;
+
+	/** Hauteur max de la prise au-dessus des pieds pour la saisir depuis le sol (saut). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm"))
+	float HauteurSaisieDepuisSol = 180.f;
+
+	/** Distance horizontale max (centre de Sira -> prise) pour la saisir depuis le sol. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm"))
+	float DistanceSaisieDepuisSol = 170.f;
+
+	/** > 0 : la prise s'effrite ce nombre de secondes après la première accroche (BancoFragile). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="s"))
+	float DelaiEffritement = 0.f;
+
+	/** Amplitude max du tremblement de la prise pendant l'effritement. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm"))
+	float AmplitudeTremblement = 0.f;
+
+	/** Vrai = on peut se déplacer le long de la prise au stick (Corniche). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade")
+	bool bDeplacementLateral = false;
+
+	/** Vitesse de déplacement le long d'une corniche. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0", Units="cm/s"))
+	float VitesseCorniche = 60.f;
+
+	/** Mantle vers le haut autorisé par défaut (chaque prise peut le surcharger). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade")
+	bool bMantleAutorise = false;
+
+	/** Durée du saut (interpolé) vers cette prise. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Escalade", meta=(ClampMin="0.05", Units="s"))
+	float DureeSaut = 0.35f;
+};

@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "MansaDataTypes.h"
+#include "MansaClimbingComponent.h"
 #include "MansaCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,6 +17,8 @@ class UEnhancedInputComponent;
 class UDataTable;
 class UMansaCameraProfileComponent;
 class UMansaTraversalComponent;
+class UMansaParcoursComponent;
+class UMansaPriseComponent;
 struct FInputActionValue;
 enum class ETriggerEvent : uint8;
 
@@ -61,6 +64,14 @@ class AMansaCharacter : public ACharacter
 	/** Enjambement et mantle (D2). */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMansaTraversalComponent> Traversal;
+
+	/** Escalade à prises (D4-D5). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMansaClimbingComponent> Climbing;
+
+	/** Checkpoints et rattrapage (D6). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMansaParcoursComponent> Parcours;
 
 protected:
 
@@ -219,6 +230,27 @@ public:
 	UFUNCTION(Exec)
 	void MansaTestFranchissement();
 
+	/** Commande console de test D3 : « MansaDebugPrises 1 » affiche type et identifiant de chaque prise. */
+	UFUNCTION(Exec)
+	void MansaDebugPrises(bool bActif);
+
+	/** Commande console de test D6 : « MansaCheckpoint CP2 » téléporte au checkpoint (CP1, CP2, CP_Combat). */
+	UFUNCTION(Exec)
+	void MansaCheckpoint(FName IdCheckpoint);
+
+	/** Commande console de test D6 : « MansaRattrapage » déclenche le fondu et le retour au checkpoint. */
+	UFUNCTION(Exec)
+	void MansaRattrapage();
+
+	/**
+	 * Commande console de test D7 : « MansaTestEscalade » (option A) ou « MansaTestEscalade B ».
+	 * Part de CP1 et enchaîne accroches / sauts / mantles jusqu'à la terrasse (une étape par seconde),
+	 * en loguant chaque étape. Les approches au sol sont des téléportations (le déplacement est testé en D1).
+	 * « MansaTestEscalade A 1 » quitte le jeu à la fin (test sans surveillance).
+	 */
+	UFUNCTION(Exec)
+	void MansaTestEscalade(FName Option = TEXT("A"), bool bQuitterALaFin = false);
+
 	/** Active / désactive le contexte d'escalade (appelé par le futur composant d'escalade). */
 	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
 	void SetEscaladeContextActive(bool bActive);
@@ -245,6 +277,17 @@ protected:
 	TArray<TWeakObjectPtr<AActor>> ObstaclesDeTest;
 	int32 IndexTestFranchissement = 0;
 	FTimerHandle TimerTestFranchissement;
+
+	// Test automatique de l'escalade (commande console)
+	void EtapeTestEscalade();
+	void GlissementTestEscalade();
+	TWeakObjectPtr<UMansaPriseComponent> CibleGlissement;
+	float TempsGlissement = 0.f;
+	void FinTestEscalade(bool bSucces, const FString& Raison);
+	TArray<FString> EtapesTestEscalade;
+	int32 IndexTestEscalade = 0;
+	bool bQuitterApresTestEscalade = false;
+	FTimerHandle TimerTestEscalade;
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -284,6 +327,10 @@ protected:
 	void OnDropHold(const FInputActionValue& Value);
 	void OnPause(const FInputActionValue& Value);
 
+	/** Escalade : bascule du contexte d'entrée et du profil caméra. */
+	UFUNCTION()
+	void OnEtatEscaladeChange(EMansaEtatEscalade Ancien, EMansaEtatEscalade Nouveau);
+
 public:
 
 	/** Handles move inputs from either controls or UI interfaces */
@@ -315,4 +362,10 @@ public:
 
 	/** Returns Traversal subobject **/
 	FORCEINLINE UMansaTraversalComponent* GetTraversal() const { return Traversal; }
+
+	/** Returns Climbing subobject **/
+	FORCEINLINE UMansaClimbingComponent* GetClimbing() const { return Climbing; }
+
+	/** Returns Parcours subobject **/
+	FORCEINLINE UMansaParcoursComponent* GetParcours() const { return Parcours; }
 };

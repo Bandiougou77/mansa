@@ -1,0 +1,6 @@
+---,bSaisissable,DistanceMaxVerticale,DistanceMaxLaterale,HauteurSaisieDepuisSol,DistanceSaisieDepuisSol,DelaiEffritement,AmplitudeTremblement,bDeplacementLateral,VitesseCorniche,bMantleAutorise,DureeSaut
+Toron,True,150,200,180,170,0,0,False,60,False,0.35
+BancoRelief,True,150,200,180,170,0,0,False,60,False,0.35
+BancoFragile,True,150,200,180,170,1.5,2.5,False,60,False,0.35
+Corniche,True,150,200,180,170,0,0,True,60,True,0.35
+Reserve_CrepiFrais,False,150,200,180,170,0,0,False,60,False,0.35
