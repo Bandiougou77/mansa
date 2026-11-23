@@ -25,6 +25,27 @@ class LaravelHttpTransport implements ClientInterface
         private readonly float $connectTimeout,
     ) {}
 
+    /**
+     * Certificats SSL (la vérification reste TOUJOURS active) :
+     *  - GRIOT_CA_BUNDLE = chemin d'un fichier cacert.pem : utilisé en priorité ;
+     *  - sinon, sous Windows, cURL lit le magasin de certificats de Windows (CURLSSLOPT_NATIVE_CA).
+     *    Sans cela, un PHP Windows sans curl.cainfo échoue avec « cURL error 60 ».
+     *
+     * @return array<string, mixed>
+     */
+    public static function optionsSsl(): array
+    {
+        $bundle = trim((string) config('griot.ssl.ca_bundle', ''));
+        if ($bundle !== '') {
+            return ['verify' => $bundle];
+        }
+        if (config('griot.ssl.native_ca', false) && defined('CURLSSLOPT_NATIVE_CA')) {
+            return ['curl' => [CURLOPT_SSL_OPTIONS => CURLSSLOPT_NATIVE_CA]];
+        }
+
+        return [];
+    }
+
     public function sendRequest(RequestInterface $request): ResponseInterface
     {
         $headers = [];
@@ -34,6 +55,7 @@ class LaravelHttpTransport implements ClientInterface
 
         try {
             $response = Http::withHeaders($headers)
+                ->withOptions(self::optionsSsl())
                 ->timeout($this->timeout)
                 ->connectTimeout($this->connectTimeout)
                 ->withBody((string) $request->getBody(), $request->getHeaderLine('Content-Type') ?: 'application/json')

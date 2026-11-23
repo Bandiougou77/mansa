@@ -38,6 +38,14 @@ return [
     'timeout' => (float) env('GRIOT_TIMEOUT', 6),
     'connect_timeout' => (float) env('GRIOT_CONNECT_TIMEOUT', 2),
 
+    // Certificats SSL (vérification toujours active). Sous Windows, PHP n'a souvent aucun
+    // magasin configuré pour cURL (« cURL error 60 ») : on utilise celui de Windows.
+    // GRIOT_CA_BUNDLE = chemin d'un cacert.pem, prioritaire si renseigné.
+    'ssl' => [
+        'ca_bundle' => env('GRIOT_CA_BUNDLE', ''),
+        'native_ca' => filter_var(env('GRIOT_SSL_NATIVE_CA', PHP_OS_FAMILY === 'Windows'), FILTER_VALIDATE_BOOL),
+    ],
+
     // ATTENTION : la version d'API 2026-10-21 (celle du SDK) a SUPPRIMÉ temperature,
     // top_p et top_k (erreur 400 sur tous les modèles). Laisser vide. N'est envoyée
     // que si une valeur est fournie (utile seulement avec une ancienne version d'API).
