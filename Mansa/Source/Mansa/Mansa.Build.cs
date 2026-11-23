@@ -1,0 +1,51 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class Mansa : ModuleRules
+{
+	public Mansa(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicDependencyModuleNames.AddRange(new string[] {
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"AIModule",
+			"StateTreeModule",
+			"GameplayStateTreeModule",
+			"UMG",
+			"Slate"
+		});
+
+		PrivateDependencyModuleNames.AddRange(new string[] { });
+
+		PublicIncludePaths.AddRange(new string[] {
+			"Mansa",
+			"Mansa/Variant_Platforming",
+			"Mansa/Variant_Platforming/Animation",
+			"Mansa/Variant_Combat",
+			"Mansa/Variant_Combat/AI",
+			"Mansa/Variant_Combat/Animation",
+			"Mansa/Variant_Combat/Gameplay",
+			"Mansa/Variant_Combat/Interfaces",
+			"Mansa/Variant_Combat/UI",
+			"Mansa/Variant_SideScrolling",
+			"Mansa/Variant_SideScrolling/AI",
+			"Mansa/Variant_SideScrolling/Gameplay",
+			"Mansa/Variant_SideScrolling/Interfaces",
+			"Mansa/Variant_SideScrolling/UI"
+		});
+
+		// Uncomment if you are using Slate UI
+		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
+		// Uncomment if you are using online features
+		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+
+		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+	}
+}
