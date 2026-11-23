@@ -3,12 +3,16 @@
 > Planches fournies par le développeur le 2026-11-23 (concept art généré par IA, **pas** des captures du jeu).
 > Elles fixent un **niveau** (lumière, densité, échelle, lisibilité du HUD), **pas** un contenu à reproduire.
 > Analyse : skill `direction-artistique-aaa`. Relecture historique : `historien-mande` (sans recherche en ligne ; points incertains signalés).
-> ✅ **2026-11-23 : toutes les corrections de la section 2 sont validées par le développeur** (Sira femme, « L'Héritier du Fleuve », banco, pirogues à perche, rien de trop proche d'Assassin's Creed). Lumière du beauty shot : aube par défaut, choix aube / couchant à confirmer.
+> ✅ **2026-11-23 : toutes les corrections de la section 2 sont validées par le développeur** (Sira femme, « L'Héritier du Fleuve », banco, pirogues à perche, rien de trop proche d'Assassin's Creed). Lumière du beauty shot : **aube** (choix du développeur).
 
 | Fichier | Contenu (4 vignettes) |
 |---|---|
 | `ref-01-empire-dore-du-mande.png` | Écran titre (héros de dos, ville au couchant) · marché bondé avec HUD · voyage à cheval avec HUD · carte du monde à onglets |
+| `ref-03-menu-carte.png` | Menu plein écran à onglets (Carte, Quêtes, Inventaire, Compétences, Réseau, Chroniques du Mandé, Paramètres), carte illustrée, quête active, légende, touches manette (2026-11-23) |
+| `ref-04-hud-exploration.png` | HUD d'exploration : objectif sur bannière de tissu, boussole avec distance, mini-carte, portrait et barres, raccourcis en losange (2026-11-23) |
 | `ref-02-epopee-du-mande.png` | Mêmes cadrages, variante plus sombre (héros en capuche, bannières, colonne de cavaliers dans les dunes) |
+
+> **ref-03 / ref-04** : on garde le **style et l'ergonomie** de l'interface, pas le contenu. Corrections déjà demandées par le développeur (relecture `historien-mande` à venir) : capitale = **Niani** (pas Tombouctou), banco à toits plats et pinacles arrondis, pirogues au lieu des voiliers, l'héroïne est **Sira**, une seule monnaie d'époque (pas de « diamants »).
 
 ## 1. Ce que ces planches fixent comme cible (à atteindre)
 
