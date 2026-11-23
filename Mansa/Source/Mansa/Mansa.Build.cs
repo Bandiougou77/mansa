@@ -18,7 +18,8 @@ public class Mansa : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"DeveloperSettings"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
@@ -27,6 +28,8 @@ public class Mansa : ModuleRules
 			"Mansa",
 			"Mansa/Data",
 			"Mansa/Movement",
+			"Mansa/Escalade",
+			"Mansa/Parcours",
 			"Mansa/Camera",
 			"Mansa/Variant_Combat",
 			"Mansa/Variant_Combat/AI",
