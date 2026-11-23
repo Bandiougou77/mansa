@@ -86,7 +86,22 @@ Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assas
 
 _(À mettre à jour à la fin de chaque session : ce qui est fait, ce qui reste, les problèmes ouverts.)_
 
-- Phase : 0
-- Fait : —
-- En cours : —
-- Bloquants : —
+_Dernière mise à jour : 2026-11-23 (session 1)._
+
+- **Phase** : 0 terminée → prochaine étape : Phase 1, tâche **A1** de `design/plan-phase1.md`.
+- **Fait** :
+  - Environnement : Git 2.52, Git LFS 3.7.1, PHP 8.2, Composer 2.9, UE 5.8.4, VS 2026 (« Développement de jeux en C++ »).
+  - Dépôt Git (Gitflow : `main` + `develop`), `.gitignore` Unreal/Laravel, `.gitattributes` LFS, structure de dossiers.
+  - Projet UE 5.8 C++ `Mansa` (template Third Person, avec les variantes Combat/Platforming/SideScrolling ajoutées par le template) dans `/Mansa`, commité, assets en LFS.
+  - `design/GDD.md` v1.2 (relu par historien-mande), `design/lore/glossaire.md`, `design/lore/djenne-1324.md`, `design/plan-phase1.md`.
+  - Décisions : djembé gardé et assumé par le narrateur ; escalade + combat sur une maison de marchand, Sira refuse de grimper sur la mosquée (décor) ; Sira chasseuse, couteau + lance courte ; griot PNJ au ngoni.
+- **En cours** : —
+- **À faire bientôt** :
+  - Proposer un dépôt GitHub privé comme sauvegarde (attention au quota LFS gratuit).
+  - Trancher GDD Q12 (hauteur de la maison du marchand) en tâche C1.
+  - Vérifier la disponibilité du plugin FMOD pour UE 5.8 (tâche E0).
+- **Points ouverts** :
+  - Relectures extérieures à trouver : locuteur (prénom Sira, mots mandingues), connaisseur des donso, lecteur musulman malien (scène du refus).
+  - `EngineAssociation` du `.uproject` est un GUID local (moteur enregistré hors Launcher) : à remplacer par `"5.8"` si on ouvre le projet sur une autre machine.
+  - Le lore a été rédigé sans recherche en ligne : vérifier les points signalés dans les fiches (Hunwick 1999, Bedaux 1994, Marchand 2009).
+- **Bloquants** : aucun.
