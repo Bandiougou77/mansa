@@ -13,6 +13,8 @@
 #include "InputMappingContext.h"
 #include "Engine/Engine.h"
 #include "Mansa.h"
+#include "MansaCameraProfileComponent.h"
+#include "Engine/DataTable.h"
 
 AMansaCharacter::AMansaCharacter()
 {
@@ -26,13 +28,9 @@ AMansaCharacter::AMansaCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 500.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	// Vitesses, saut, contrôle en l'air et rotation : lus dans DT_CharacterMovement au BeginPlay
+	// (ChargerReglagesMouvement). Les réglages ci-dessous sont du confort de CMC, modifiables dans BP_Sira.
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
@@ -48,8 +46,107 @@ AMansaCharacter::AMansaCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	// Profils de caméra (bras, FOV, décalage) pilotés par DT_CameraProfiles
+	CameraProfiles = CreateDefaultSubobject<UMansaCameraProfileComponent>(TEXT("CameraProfiles"));
+	CameraProfiles->SetCibles(CameraBoom, FollowCamera);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+}
+
+void AMansaCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	ChargerReglagesMouvement();
+}
+
+void AMansaCharacter::ChargerReglagesMouvement()
+{
+	const FMansaMovementRow* Ligne = nullptr;
+	if (MovementTable)
+	{
+		Ligne = MovementTable->FindRow<FMansaMovementRow>(MovementRowName, TEXT("MansaMovement"), /*bWarnIfRowMissing*/ false);
+	}
+	if (Ligne)
+	{
+		MouvementCourant = *Ligne;
+	}
+	else
+	{
+		UE_LOG(LogMansa, Warning, TEXT("%s : ligne '%s' introuvable dans %s (DT_CharacterMovement), valeurs de repli utilisées."),
+			*GetName(), *MovementRowName.ToString(), MovementTable ? *MovementTable->GetName() : TEXT("<aucune table>"));
+		MouvementCourant = MouvementDeRepli;
+	}
+
+	UCharacterMovementComponent* CMC = GetCharacterMovement();
+	CMC->AirControl = MouvementCourant.ControleEnLair;
+	CMC->RotationRate = FRotator(0.f, MouvementCourant.VitesseRotation, 0.f);
+
+	// Hauteur de saut -> vitesse initiale : h = v² / 2g  =>  v = sqrt(2 g h)
+	const float Gravite = FMath::Abs(CMC->GetGravityZ());
+	CMC->JumpZVelocity = FMath::Sqrt(2.f * Gravite * FMath::Max(0.f, MouvementCourant.HauteurSaut));
+
+	MettreAJourAllure();
+
+	UE_LOG(LogMansa, Log, TEXT("%s : déplacement chargé (marche %.0f, jogging %.0f, course %.0f, saut %.0f cm -> JumpZ %.0f)"),
+		*GetName(), MouvementCourant.VitesseMarche, MouvementCourant.VitesseJogging, MouvementCourant.VitesseCourse,
+		MouvementCourant.HauteurSaut, CMC->JumpZVelocity);
+}
+
+void AMansaCharacter::MettreAJourAllure()
+{
+	// Priorité : marche lente > course > jogging (marcher est un choix volontaire du joueur).
+	const bool bCourseStick = MouvementCourant.bCourseStickAFond && MagnitudeStick >= MouvementCourant.SeuilStickCourse;
+	EMansaAllure Nouvelle = EMansaAllure::Jogging;
+	if (bMarcheMaintenue)
+	{
+		Nouvelle = EMansaAllure::Marche;
+	}
+	else if (bSprintMaintenu || bSprintBascule || bCourseStick)
+	{
+		Nouvelle = EMansaAllure::Course;
+	}
+	AllureCourante = Nouvelle;
+
+	float Vitesse = MouvementCourant.VitesseJogging;
+	switch (Nouvelle)
+	{
+	case EMansaAllure::Marche: Vitesse = MouvementCourant.VitesseMarche; break;
+	case EMansaAllure::Course: Vitesse = MouvementCourant.VitesseCourse; break;
+	default: break;
+	}
+	// À la manette, un stick partiel réduit déjà la vitesse (CMC analogique) : c'est la « marche » manette.
+	GetCharacterMovement()->MaxWalkSpeed = Vitesse;
+}
+
+void AMansaCharacter::SetCameraProfile(FName NomProfil)
+{
+	if (CameraProfiles)
+	{
+		CameraProfiles->SetCameraProfile(NomProfil);
+	}
+}
+
+void AMansaCharacter::MansaCamera(FName NomProfil)
+{
+	UE_LOG(LogMansa, Log, TEXT("Console : profil caméra %s"), *NomProfil.ToString());
+	SetCameraProfile(NomProfil);
+}
+
+void AMansaCharacter::MansaContexte(FName NomContexte, bool bActif)
+{
+	if (NomContexte == TEXT("Combat"))
+	{
+		SetCombatContextActive(bActif);
+	}
+	else if (NomContexte == TEXT("Escalade"))
+	{
+		SetEscaladeContextActive(bActif);
+	}
+	else
+	{
+		UE_LOG(LogMansa, Warning, TEXT("Console : contexte inconnu '%s' (Combat ou Escalade)."), *NomContexte.ToString());
+	}
 }
 
 void AMansaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -169,31 +266,45 @@ void AMansaCharacter::OnJumpCompleted(const FInputActionValue& Value)
 
 void AMansaCharacter::OnMoveCompleted(const FInputActionValue& Value)
 {
+	// Stick / touches relâchés : la course en bascule (L3) s'arrête, comme dans la plupart des jeux manette.
+	MagnitudeStick = 0.f;
+	bSprintBascule = false;
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnSprintStarted(const FInputActionValue& Value)
 {
 	DebugInput(TEXT("Courir (maintien) : début"));
+	bSprintMaintenu = true;
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnSprintCompleted(const FInputActionValue& Value)
 {
 	DebugInput(TEXT("Courir (maintien) : fin"));
+	bSprintMaintenu = false;
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnSprintToggle(const FInputActionValue& Value)
 {
-	DebugInput(TEXT("Courir (bascule L3)"));
+	bSprintBascule = !bSprintBascule;
+	DebugInput(FString::Printf(TEXT("Courir (bascule L3) : %s"), bSprintBascule ? TEXT("oui") : TEXT("non")));
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnWalkStarted(const FInputActionValue& Value)
 {
 	DebugInput(TEXT("Marcher : début"));
+	bMarcheMaintenue = true;
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnWalkCompleted(const FInputActionValue& Value)
 {
 	DebugInput(TEXT("Marcher : fin"));
+	bMarcheMaintenue = false;
+	MettreAJourAllure();
 }
 
 void AMansaCharacter::OnInteract(const FInputActionValue& Value)
@@ -236,6 +347,18 @@ void AMansaCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// Course « stick à fond » (option de la DT) : on ne recalcule que si on franchit le seuil.
+	if (MouvementCourant.bCourseStickAFond)
+	{
+		const float Seuil = MouvementCourant.SeuilStickCourse;
+		const bool bAvant = MagnitudeStick >= Seuil;
+		MagnitudeStick = MovementVector.Size();
+		if (bAvant != (MagnitudeStick >= Seuil))
+		{
+			MettreAJourAllure();
+		}
+	}
 
 	// route the input
 	DoMove(MovementVector.X, MovementVector.Y);

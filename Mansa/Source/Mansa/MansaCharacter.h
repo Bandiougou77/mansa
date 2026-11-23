@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "MansaDataTypes.h"
 #include "MansaCharacter.generated.h"
 
 class USpringArmComponent;
@@ -12,10 +13,21 @@ class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class UEnhancedInputComponent;
+class UDataTable;
+class UMansaCameraProfileComponent;
 struct FInputActionValue;
 enum class ETriggerEvent : uint8;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+
+/** Allure de déplacement au sol (GDD §4.3). */
+UENUM(BlueprintType)
+enum class EMansaAllure : uint8
+{
+	Marche,
+	Jogging,
+	Course
+};
 
 /**
  *  Personnage jouable de MANSA (Sira).
@@ -41,7 +53,35 @@ class AMansaCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
 
+	/** Profils de caméra (DT_CameraProfiles) et transitions. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMansaCameraProfileComponent> CameraProfiles;
+
 protected:
+
+	// ---------------------------------------------------------------------
+	// Déplacement (D1, GDD §4.3) : valeurs lues dans DT_CharacterMovement
+	// ---------------------------------------------------------------------
+
+	/** Table des réglages de déplacement (struct FMansaMovementRow). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Deplacement")
+	TObjectPtr<UDataTable> MovementTable;
+
+	/** Ligne de MovementTable utilisée par ce personnage. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Deplacement")
+	FName MovementRowName = TEXT("Defaut");
+
+	/** Valeurs de repli si la table ou la ligne manque (un warning est logué). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Deplacement")
+	FMansaMovementRow MouvementDeRepli;
+
+	/** Réglages effectivement appliqués (lecture seule, pour le debug). */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Mansa|Deplacement")
+	FMansaMovementRow MouvementCourant;
+
+	/** Allure actuelle. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Mansa|Deplacement")
+	EMansaAllure AllureCourante = EMansaAllure::Jogging;
 
 	// ---------------------------------------------------------------------
 	// Contextes d'entrée (GDD §4.2)
@@ -144,6 +184,29 @@ public:
 	/** Constructor */
 	AMansaCharacter();
 
+	/** Relit la ligne de DT_CharacterMovement et l'applique au Character Movement Component. */
+	UFUNCTION(BlueprintCallable, Category="Mansa|Deplacement")
+	void ChargerReglagesMouvement();
+
+	/** Réglages de déplacement en vigueur (lus dans la DT). */
+	UFUNCTION(BlueprintPure, Category="Mansa|Deplacement")
+	const FMansaMovementRow& GetReglagesMouvement() const { return MouvementCourant; }
+
+	UFUNCTION(BlueprintPure, Category="Mansa|Deplacement")
+	EMansaAllure GetAllure() const { return AllureCourante; }
+
+	/** Passe à un profil caméra de DT_CameraProfiles (Exploration, Escalade, Combat), transition interpolée. */
+	UFUNCTION(BlueprintCallable, Category="Mansa|Camera")
+	void SetCameraProfile(FName NomProfil);
+
+	/** Commande console de test : « MansaCamera Combat » (profils Exploration / Escalade / Combat). */
+	UFUNCTION(Exec)
+	void MansaCamera(FName NomProfil);
+
+	/** Commande console de test : « MansaContexte Combat 1 » / « MansaContexte Escalade 0 ». */
+	UFUNCTION(Exec)
+	void MansaContexte(FName NomContexte, bool bActif);
+
 	/** Active / désactive le contexte d'escalade (appelé par le futur composant d'escalade). */
 	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
 	void SetEscaladeContextActive(bool bActive);
@@ -153,6 +216,17 @@ public:
 	void SetCombatContextActive(bool bActive);
 
 protected:
+
+	virtual void BeginPlay() override;
+
+	/** Recalcule l'allure (marche / jogging / course) et la vitesse max. */
+	void MettreAJourAllure();
+
+	// État des entrées d'allure
+	bool bSprintMaintenu = false;
+	bool bSprintBascule = false;
+	bool bMarcheMaintenue = false;
+	float MagnitudeStick = 0.f;
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -217,4 +291,7 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/** Returns CameraProfiles subobject **/
+	FORCEINLINE UMansaCameraProfileComponent* GetCameraProfiles() const { return CameraProfiles; }
 };
