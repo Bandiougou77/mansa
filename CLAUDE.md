@@ -99,11 +99,11 @@ Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assas
 
 _(À mettre à jour à la fin de chaque session : ce qui est fait, ce qui reste, les problèmes ouverts.)_
 
-_Dernière mise à jour : 2026-11-23 (session 2)._
+_Dernière mise à jour : 2026-11-23 (session 2, fin)._
 
-- **Phase** : 1 en cours. Faits : A1-A6, C (greybox `LV_Djenne_Greybox`), D1-D7 (escalade complète, test auto `MansaTestEscalade` A 19/19, B 22/22), B1-B6 (backend griot fusionné), références visuelles V0 + DA AAA.
-- **Prochaine étape** : nouvelle direction artistique de l'interface (UMG + CommonUI), **analyse et plan seulement**, en attente du cahier des charges du développeur. Puis bloc V (beauty shot, lumière d'**aube**), E (combat), F (griot dans le jeu).
-- **À tester par le développeur** : contrôles A6 au clavier et à la manette (`design/controles.md`) ; `griot:eval` avec une vraie clé API (`backend/.env`).
+- **Phase** : 1 en cours. Faits : A1-A6, C (greybox `LV_Djenne_Greybox`), D1-D7 (escalade complète, test auto `MansaTestEscalade` A 19/19, B 22/22), B1-B6 (backend griot : prompt v2, `griot:eval` réel **19/20**, latence médiane 1,3 s, ~0,005 $ par passage), références visuelles V0 + DA AAA.
+- **Prochaine étape** : direction artistique de l'interface (UMG + CommonUI), **analyse et plan seulement**, en attente du cahier des charges du développeur. Puis bloc V (beauty shot, lumière d'**aube**), E (combat), F (griot dans le jeu, avec la tâche « prompt griot v3 » de `design/idees-plus-tard.md`).
+- **À tester par le développeur** : contrôles A6 au clavier et à la manette (`design/controles.md`), résultat pas encore reçu.
 - **Astuce** : les scripts `tools/unreal/*.py` peuvent tourner sans surveillance (`MANSA_AUTOQUIT=1` + `UnrealEditor.exe … -ExecutePythonScript=… -unattended`) ; tests en jeu : `UnrealEditor.exe Mansa.uproject /Game/Mansa/Maps/LV_Djenne_Greybox -game "-ExecCmds=MansaTestEscalade A 1"`.
 - **Fait** :
   - Environnement : Git 2.52, Git LFS 3.7.1, PHP 8.2, Composer 2.9, UE 5.8.4, VS 2026 (« Développement de jeux en C++ »).
@@ -113,11 +113,12 @@ _Dernière mise à jour : 2026-11-23 (session 2)._
   - Décisions : djembé gardé et assumé par le narrateur ; escalade + combat sur une maison de marchand, Sira refuse de grimper sur la mosquée (décor) ; Sira chasseuse, couteau + lance courte ; griot PNJ au ngoni.
 - **En cours** : —
 - **À faire bientôt** :
-  - Supprimer le worktree `.claude/worktrees/agent-a5a58c5dc0542d2ff` (travail fusionné dans `develop`).
-  - Mettre une clé API dans `backend/.env` et lancer `php artisan griot:eval` (objectif ≥ 19/20, environ un centime avec Haiku).
+  - Prompt griot v3 (voir `design/idees-plus-tard.md`).
   - Surveiller le quota Git LFS gratuit de GitHub (références : ~12 Mo de PNG ajoutés).
   - Vérifier la disponibilité du plugin FMOD pour UE 5.8 (tâche E0).
 - **Points ouverts** :
+  - Backend sous Windows : cURL utilise le magasin de certificats de Windows (`GRIOT_SSL_NATIVE_CA`), sinon « cURL error 60 ». Sur une autre machine, renseigner `GRIOT_CA_BUNDLE` si besoin.
+  - `main` ne contient que le commit initial : fusionner `develop` au jalon `slice-escalade` si le développeur le souhaite.
   - Décisions UI en attente : monnaie (cauris recommandés), contenu de « Réseau », mini-carte (non recommandée), migration des prompts A6 vers CommonUI.
   - Relectures extérieures à trouver : locuteur (prénom Sira, mots mandingues), connaisseur des donso, lecteur musulman malien (scène du refus).
   - `EngineAssociation` du `.uproject` est un GUID local : à remplacer par `"5.8"` si on ouvre le projet sur une autre machine.
