@@ -1,0 +1,5396 @@
+{
+  "meta": {
+    "source": "design/niveaux/djenne-slice.md (directeur-creatif, 2026-11-23)",
+    "version": 1,
+    "repere": "cm ; X = est, Y = nord (fleuve), Z = haut ; origine = spawn au sol",
+    "convention_centre_dims": "centre = centre de la boîte englobante ; dims = taille totale. Pour un élément avec yaw non nul (pirogues), dims = dimensions locales avant rotation. Cylindres : axe X ou Y = couché le long de cet axe.",
+    "convention_prises": "dims en axes monde ; normale = vers l'extérieur du mur ; yaw acteur déduit de la normale (+X -> 0, +Y -> 90, -Y -> -90)",
+    "nb_elements_attendu": 141,
+    "nb_prises_attendu": 23
+  },
+  "config": {
+    "map": "/Game/Mansa/Maps/LV_Djenne_Greybox",
+    "dossier_materiaux": "/Game/Mansa/Materials/Greybox",
+    "game_mode_bp": "/Game/Mansa/Blueprints/BP_MansaGameMode",
+    "tag_greybox": "MansaGreybox",
+    "racine_outliner": "Greybox",
+    "dossier_prises": "D_Prises",
+    "dossier_gameplay": "Gameplay",
+    "dossier_lumiere": "Lumiere",
+    "meshes": {
+      "boite": "/Engine/BasicShapes/Cube",
+      "cylindre": "/Engine/BasicShapes/Cylinder",
+      "cone": "/Engine/BasicShapes/Cone",
+      "plan": "/Engine/BasicShapes/Plane"
+    },
+    "profil_collision_blocking": "InvisibleWall"
+  },
+  "palette": {
+    "banco_clair": {
+      "nom": "Banco clair (enduit sec, ancien)",
+      "rgb": [
+        190,
+        146,
+        100
+      ],
+      "source": "fiche",
+      "hex": "#BE9264"
+    },
+    "banco_ombre": {
+      "nom": "Banco ombré (érodé, humide, sous gouttières)",
+      "rgb": [
+        128,
+        92,
+        64
+      ],
+      "source": "fiche",
+      "hex": "#805C40"
+    },
+    "ombre_aube": {
+      "nom": "Ombre perçue à l'aube (référence d'étalonnage)",
+      "rgb": [
+        92,
+        86,
+        98
+      ],
+      "source": "fiche",
+      "hex": "#5C5662"
+    },
+    "enduit_frais": {
+      "nom": "Enduit frais (haut de la façade est)",
+      "rgb": [
+        168,
+        118,
+        78
+      ],
+      "source": "fiche",
+      "hex": "#A8764E"
+    },
+    "banco_mosquee": {
+      "nom": "Banco de la mosquée",
+      "rgb": [
+        170,
+        126,
+        88
+      ],
+      "source": "fiche",
+      "hex": "#AA7E58"
+    },
+    "bois_ronier": {
+      "nom": "Bois des toron et gouttières (rônier)",
+      "rgb": [
+        72,
+        50,
+        34
+      ],
+      "source": "fiche",
+      "hex": "#483222"
+    },
+    "sol_terre": {
+      "nom": "Sol de terre battue",
+      "rgb": [
+        158,
+        120,
+        84
+      ],
+      "source": "fiche",
+      "hex": "#9E7854"
+    },
+    "berge_humide": {
+      "nom": "Berge humide",
+      "rgb": [
+        96,
+        78,
+        60
+      ],
+      "source": "fiche",
+      "hex": "#604E3C"
+    },
+    "eau": {
+      "nom": "Eau du fleuve",
+      "rgb": [
+        70,
+        92,
+        96
+      ],
+      "source": "fiche",
+      "hex": "#465C60"
+    },
+    "ciel_horizon": {
+      "nom": "Ciel à l'horizon, côté soleil",
+      "rgb": [
+        255,
+        186,
+        120
+      ],
+      "source": "fiche",
+      "hex": "#FFBA78"
+    },
+    "ciel_zenith": {
+      "nom": "Ciel au zénith",
+      "rgb": [
+        110,
+        140,
+        185
+      ],
+      "source": "fiche",
+      "hex": "#6E8CB9"
+    },
+    "brume_harmattan": {
+      "nom": "Diffusion du brouillard (poussière d'harmattan)",
+      "rgb": [
+        190,
+        140,
+        95
+      ],
+      "source": "fiche",
+      "hex": "#BE8C5F"
+    },
+    "coton": {
+      "nom": "Coton blanc cassé (auvents, ballots, nattes)",
+      "rgb": [
+        222,
+        210,
+        186
+      ],
+      "source": "ajout tech-art",
+      "hex": "#DED2BA"
+    },
+    "vegetal_sec": {
+      "nom": "Végétation sèche (rôniers, acacia, rizières)",
+      "rgb": [
+        92,
+        98,
+        54
+      ],
+      "source": "ajout tech-art",
+      "hex": "#5C6236"
+    },
+    "sombre": {
+      "nom": "Ouvertures sombres (fenêtres, rigole)",
+      "rgb": [
+        38,
+        28,
+        22
+      ],
+      "source": "ajout tech-art",
+      "hex": "#261C16"
+    },
+    "banco_fissure": {
+      "nom": "Banco fissuré (prise fragile)",
+      "rgb": [
+        158,
+        102,
+        66
+      ],
+      "source": "ajout tech-art",
+      "hex": "#9E6642"
+    },
+    "volume_editeur": {
+      "nom": "Volumes (visibles en éditeur seulement)",
+      "rgb": [
+        80,
+        140,
+        230
+      ],
+      "source": "ajout tech-art",
+      "hex": "#508CE6"
+    }
+  },
+  "materiaux": {
+    "M_GB_BancoClair": {
+      "couleur": "banco_clair",
+      "roughness": 0.85
+    },
+    "M_GB_BancoOmbre": {
+      "couleur": "banco_ombre",
+      "roughness": 0.9
+    },
+    "M_GB_EnduitFrais": {
+      "couleur": "enduit_frais",
+      "roughness": 0.7
+    },
+    "M_GB_Mosquee": {
+      "couleur": "banco_mosquee",
+      "roughness": 0.88
+    },
+    "M_GB_Toron": {
+      "couleur": "bois_ronier",
+      "roughness": 0.8
+    },
+    "M_GB_Sol": {
+      "couleur": "sol_terre",
+      "roughness": 0.92
+    },
+    "M_GB_Berge": {
+      "couleur": "berge_humide",
+      "roughness": 0.6
+    },
+    "M_GB_Eau": {
+      "couleur": "eau",
+      "roughness": 0.12,
+      "specular": 0.6
+    },
+    "M_GB_Tissu": {
+      "couleur": "coton",
+      "roughness": 0.9
+    },
+    "M_GB_Vegetal": {
+      "couleur": "vegetal_sec",
+      "roughness": 0.85
+    },
+    "M_GB_Sombre": {
+      "couleur": "sombre",
+      "roughness": 0.95
+    },
+    "M_GB_BancoFragile": {
+      "couleur": "banco_fissure",
+      "roughness": 0.95
+    },
+    "M_GB_Volume": {
+      "couleur": "volume_editeur",
+      "translucide": true,
+      "opacite": 0.2
+    }
+  },
+  "elements": [
+    {
+      "id": "G1",
+      "nom": "Sol ville (butte)",
+      "label": "G1_Sol_ville_butte",
+      "forme": "boite",
+      "centre": [
+        400,
+        4500,
+        -25
+      ],
+      "dims": [
+        8800,
+        11000,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "Sols",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "X[-4000,4800], Y[-1000,10000]"
+    },
+    {
+      "id": "G2",
+      "nom": "Masse de la butte ouest (sous la maison)",
+      "label": "G2_Masse_de_la_butte_ouest_sous_la_maison",
+      "forme": "boite",
+      "centre": [
+        -2300,
+        10300,
+        -225
+      ],
+      "dims": [
+        3400,
+        600,
+        450
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "Sols",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "Face nord Y=10600 = soutènement"
+    },
+    {
+      "id": "G3",
+      "nom": "Masse de la butte est",
+      "label": "G3_Masse_de_la_butte_est",
+      "forme": "boite",
+      "centre": [
+        3050,
+        10300,
+        -225
+      ],
+      "dims": [
+        3500,
+        600,
+        450
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "Sols",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F1",
+      "nom": "Berge",
+      "label": "F1_Berge",
+      "forme": "boite",
+      "centre": [
+        400,
+        12300,
+        -475
+      ],
+      "dims": [
+        8800,
+        3400,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Berge",
+      "collision": true,
+      "note": "Sommet à Z -450"
+    },
+    {
+      "id": "F2",
+      "nom": "Fleuve (Bani)",
+      "label": "F2_Fleuve_Bani",
+      "forme": "boite",
+      "centre": [
+        500,
+        24000,
+        -520
+      ],
+      "dims": [
+        17000,
+        20000,
+        40
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Eau",
+      "collision": true,
+      "note": "Surface à Z -500"
+    },
+    {
+      "id": "F3",
+      "nom": "Rive opposée (plaine inondable, rizières)",
+      "label": "F3_Rive_opposee_plaine_inondable_rizieres",
+      "forme": "boite",
+      "centre": [
+        500,
+        37000,
+        -490
+      ],
+      "dims": [
+        17000,
+        6000,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Vegetal",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F4",
+      "nom": "Pirogue 1 (tirée sur la berge)",
+      "label": "F4_Pirogue_1_tiree_sur_la_berge",
+      "forme": "boite",
+      "centre": [
+        -1800,
+        13600,
+        -425
+      ],
+      "dims": [
+        900,
+        110,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 8,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F5",
+      "nom": "Pirogue 2",
+      "label": "F5_Pirogue_2",
+      "forme": "boite",
+      "centre": [
+        -300,
+        13800,
+        -425
+      ],
+      "dims": [
+        900,
+        110,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": -5,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F6",
+      "nom": "Pirogue 3 (sur l'eau)",
+      "label": "F6_Pirogue_3_sur_l_eau",
+      "forme": "boite",
+      "centre": [
+        1500,
+        17000,
+        -480
+      ],
+      "dims": [
+        1000,
+        120,
+        40
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 20,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F7",
+      "nom": "Rônier 1, tronc",
+      "label": "F7_Ronier_1_tronc",
+      "forme": "cylindre",
+      "centre": [
+        -3000,
+        12500,
+        -20
+      ],
+      "dims": [
+        40,
+        40,
+        860
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F8",
+      "nom": "Rônier 1, couronne",
+      "label": "F8_Ronier_1_couronne",
+      "forme": "cylindre",
+      "centre": [
+        -3000,
+        12500,
+        460
+      ],
+      "dims": [
+        500,
+        500,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Vegetal",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F9",
+      "nom": "Rônier 2, tronc",
+      "label": "F9_Ronier_2_tronc",
+      "forme": "cylindre",
+      "centre": [
+        2200,
+        12000,
+        -20
+      ],
+      "dims": [
+        40,
+        40,
+        860
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "F10",
+      "nom": "Rônier 2, couronne",
+      "label": "F10_Ronier_2_couronne",
+      "forme": "cylindre",
+      "centre": [
+        2200,
+        12000,
+        460
+      ],
+      "dims": [
+        500,
+        500,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "F_Fleuve",
+      "materiau": "M_GB_Vegetal",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A01",
+      "nom": "Îlot ouest, sud",
+      "label": "A01_Ilot_ouest_sud",
+      "forme": "boite",
+      "centre": [
+        -675,
+        550,
+        175
+      ],
+      "dims": [
+        1050,
+        2100,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A02",
+      "nom": "Îlot ouest, milieu (à étage)",
+      "label": "A02_Ilot_ouest_milieu_a_etage",
+      "forme": "boite",
+      "centre": [
+        -675,
+        2400,
+        300
+      ],
+      "dims": [
+        1050,
+        1600,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A03",
+      "nom": "Îlot ouest, nord",
+      "label": "A03_Ilot_ouest_nord",
+      "forme": "boite",
+      "centre": [
+        -675,
+        4000,
+        175
+      ],
+      "dims": [
+        1050,
+        1600,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A04",
+      "nom": "Fond de ruelle derrière le spawn",
+      "label": "A04_Fond_de_ruelle_derriere_le_spawn",
+      "forme": "boite",
+      "centre": [
+        0,
+        -400,
+        175
+      ],
+      "dims": [
+        300,
+        200,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A05",
+      "nom": "Îlot est, sud",
+      "label": "A05_Ilot_est_sud",
+      "forme": "boite",
+      "centre": [
+        675,
+        550,
+        175
+      ],
+      "dims": [
+        1050,
+        2100,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A06",
+      "nom": "Îlot est, coude (à étage)",
+      "label": "A06_Ilot_est_coude_a_etage",
+      "forme": "boite",
+      "centre": [
+        875,
+        2250,
+        300
+      ],
+      "dims": [
+        650,
+        1300,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A07",
+      "nom": "Îlot central, sud",
+      "label": "A07_Ilot_central_sud",
+      "forme": "boite",
+      "centre": [
+        50,
+        2400,
+        175
+      ],
+      "dims": [
+        400,
+        1000,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A08",
+      "nom": "Îlot central, nord (bord ouest du passage étroit)",
+      "label": "A08_Ilot_central_nord_bord_ouest_du_passage_et",
+      "forme": "boite",
+      "centre": [
+        90,
+        3200,
+        175
+      ],
+      "dims": [
+        480,
+        600,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A09",
+      "nom": "Îlot est, bord est du passage étroit",
+      "label": "A09_Ilot_est_bord_est_du_passage_etroit",
+      "forme": "boite",
+      "centre": [
+        835,
+        3200,
+        175
+      ],
+      "dims": [
+        730,
+        600,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A10",
+      "nom": "Îlot est, coude nord",
+      "label": "A10_Ilot_est_coude_nord",
+      "forme": "boite",
+      "centre": [
+        835,
+        3650,
+        175
+      ],
+      "dims": [
+        730,
+        300,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A11",
+      "nom": "Îlot est, nord (à étage)",
+      "label": "A11_Ilot_est_nord_a_etage",
+      "forme": "boite",
+      "centre": [
+        700,
+        4300,
+        300
+      ],
+      "dims": [
+        1000,
+        1000,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A12",
+      "nom": "Muret (tutoriel enjambement)",
+      "label": "A12_Muret_tutoriel_enjambement",
+      "forme": "boite",
+      "centre": [
+        0,
+        1100,
+        35
+      ],
+      "dims": [
+        300,
+        40,
+        70
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "<= 90"
+    },
+    {
+      "id": "A13",
+      "nom": "Rigole centrale",
+      "label": "A13_Rigole_centrale",
+      "forme": "boite",
+      "centre": [
+        0,
+        800,
+        1
+      ],
+      "dims": [
+        30,
+        2000,
+        2
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_Sombre",
+      "collision": false,
+      "note": "sombre, sans collision"
+    },
+    {
+      "id": "A14",
+      "nom": "Jarre derrière le spawn",
+      "label": "A14_Jarre_derriere_le_spawn",
+      "forme": "cylindre",
+      "centre": [
+        110,
+        -230,
+        40
+      ],
+      "dims": [
+        60,
+        60,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoOmbre",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A15",
+      "nom": "Jarre dans le coin du coude F5",
+      "label": "A15_Jarre_dans_le_coin_du_coude_F5",
+      "forme": "cylindre",
+      "centre": [
+        -115,
+        3545,
+        40
+      ],
+      "dims": [
+        60,
+        60,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_BancoOmbre",
+      "collision": true,
+      "note": "laisse 285 libres"
+    },
+    {
+      "id": "A16",
+      "nom": "Porte basse en bois",
+      "label": "A16_Porte_basse_en_bois",
+      "forme": "boite",
+      "centre": [
+        551,
+        2300,
+        100
+      ],
+      "dims": [
+        6,
+        120,
+        200
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A17",
+      "nom": "Gouttière (au-dessus de F3)",
+      "label": "A17_Gouttiere_au_dessus_de_F3",
+      "forme": "cylindre",
+      "centre": [
+        520,
+        2600,
+        570
+      ],
+      "dims": [
+        60,
+        20,
+        20
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "A18",
+      "nom": "Gouttière (au-dessus de F6)",
+      "label": "A18_Gouttiere_au_dessus_de_F6",
+      "forme": "cylindre",
+      "centre": [
+        230,
+        4300,
+        570
+      ],
+      "dims": [
+        60,
+        20,
+        20
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "A_Ruelle",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B01",
+      "nom": "Îlot ouest",
+      "label": "B01_Ilot_ouest",
+      "forme": "boite",
+      "centre": [
+        -850,
+        5300,
+        175
+      ],
+      "dims": [
+        700,
+        1000,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B02",
+      "nom": "Îlot est (à étage)",
+      "label": "B02_Ilot_est_a_etage",
+      "forme": "boite",
+      "centre": [
+        850,
+        5300,
+        300
+      ],
+      "dims": [
+        700,
+        1000,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B03",
+      "nom": "Îlot nord-ouest (bord du passage BC)",
+      "label": "B03_Ilot_nord_ouest_bord_du_passage_BC",
+      "forme": "boite",
+      "centre": [
+        -675,
+        6000,
+        175
+      ],
+      "dims": [
+        1050,
+        400,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B04",
+      "nom": "Îlot nord-est (bord du passage BC)",
+      "label": "B04_Ilot_nord_est_bord_du_passage_BC",
+      "forme": "boite",
+      "centre": [
+        725,
+        6000,
+        175
+      ],
+      "dims": [
+        950,
+        400,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B05",
+      "nom": "Banc de banco du griot",
+      "label": "B05_Banc_de_banco_du_griot",
+      "forme": "boite",
+      "centre": [
+        -475,
+        5450,
+        22.5
+      ],
+      "dims": [
+        50,
+        180,
+        45
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B06",
+      "nom": "Acacia, tronc",
+      "label": "B06_Acacia_tronc",
+      "forme": "cylindre",
+      "centre": [
+        300,
+        5550,
+        150
+      ],
+      "dims": [
+        30,
+        30,
+        300
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "B07",
+      "nom": "Acacia, houppier",
+      "label": "B07_Acacia_houppier",
+      "forme": "cylindre",
+      "centre": [
+        300,
+        5550,
+        330
+      ],
+      "dims": [
+        400,
+        400,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_Vegetal",
+      "collision": false,
+      "note": "sans collision"
+    },
+    {
+      "id": "B08",
+      "nom": "Mortier à piler",
+      "label": "B08_Mortier_a_piler",
+      "forme": "cylindre",
+      "centre": [
+        400,
+        5000,
+        30
+      ],
+      "dims": [
+        50,
+        50,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "B_Griot",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C01",
+      "nom": "Maisons sud-ouest",
+      "label": "C01_Maisons_sud_ouest",
+      "forme": "boite",
+      "centre": [
+        -2400,
+        5800,
+        175
+      ],
+      "dims": [
+        2400,
+        800,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C02",
+      "nom": "Maisons sud-est",
+      "label": "C02_Maisons_sud_est",
+      "forme": "boite",
+      "centre": [
+        3000,
+        5800,
+        175
+      ],
+      "dims": [
+        3600,
+        800,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C03",
+      "nom": "Maisons ouest, sud",
+      "label": "C03_Maisons_ouest_sud",
+      "forme": "boite",
+      "centre": [
+        -3200,
+        7000,
+        175
+      ],
+      "dims": [
+        800,
+        1600,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C04",
+      "nom": "Maisons ouest, nord (à étage)",
+      "label": "C04_Maisons_ouest_nord_a_etage",
+      "forme": "boite",
+      "centre": [
+        -3200,
+        8550,
+        300
+      ],
+      "dims": [
+        800,
+        1500,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C05",
+      "nom": "Voisin mitoyen ouest du marchand (bord de butte)",
+      "label": "C05_Voisin_mitoyen_ouest_du_marchand_bord_de_b",
+      "forme": "boite",
+      "centre": [
+        -2600,
+        9950,
+        175
+      ],
+      "dims": [
+        800,
+        1300,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C06",
+      "nom": "Maisons à l'est de la mosquée",
+      "label": "C06_Maisons_a_l_est_de_la_mosquee",
+      "forme": "boite",
+      "centre": [
+        4450,
+        7750,
+        175
+      ],
+      "dims": [
+        700,
+        3100,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C07",
+      "nom": "Maisons au nord de la mosquée (bord est du recoin)",
+      "label": "C07_Maisons_au_nord_de_la_mosquee_bord_est_du",
+      "forme": "boite",
+      "centre": [
+        1850,
+        9950,
+        175
+      ],
+      "dims": [
+        1100,
+        1300,
+        350
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C08",
+      "nom": "Maisons au nord-est de la mosquée (à étage)",
+      "label": "C08_Maisons_au_nord_est_de_la_mosquee_a_etage",
+      "forme": "boite",
+      "centre": [
+        3600,
+        9950,
+        300
+      ],
+      "dims": [
+        2400,
+        1300,
+        600
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C09",
+      "nom": "Étal 1, table",
+      "label": "C09_Etal_1_table",
+      "forme": "boite",
+      "centre": [
+        -2300,
+        6800,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C10",
+      "nom": "Étal 1, auvent",
+      "label": "C10_Etal_1_auvent",
+      "forme": "boite",
+      "centre": [
+        -2300,
+        6800,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C11",
+      "nom": "Étal 2, table",
+      "label": "C11_Etal_2_table",
+      "forme": "boite",
+      "centre": [
+        -2300,
+        7600,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C12",
+      "nom": "Étal 2, auvent",
+      "label": "C12_Etal_2_auvent",
+      "forme": "boite",
+      "centre": [
+        -2300,
+        7600,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C13",
+      "nom": "Étal 3, table",
+      "label": "C13_Etal_3_table",
+      "forme": "boite",
+      "centre": [
+        -1600,
+        7100,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C14",
+      "nom": "Étal 3, auvent",
+      "label": "C14_Etal_3_auvent",
+      "forme": "boite",
+      "centre": [
+        -1600,
+        7100,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C15",
+      "nom": "Étal 4, table",
+      "label": "C15_Etal_4_table",
+      "forme": "boite",
+      "centre": [
+        -1000,
+        6800,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C16",
+      "nom": "Étal 4, auvent",
+      "label": "C16_Etal_4_auvent",
+      "forme": "boite",
+      "centre": [
+        -1000,
+        6800,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C17",
+      "nom": "Étal 5, table",
+      "label": "C17_Etal_5_table",
+      "forme": "boite",
+      "centre": [
+        -2350,
+        8600,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C18",
+      "nom": "Étal 5, auvent",
+      "label": "C18_Etal_5_auvent",
+      "forme": "boite",
+      "centre": [
+        -2350,
+        8600,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C19",
+      "nom": "Étal 6, table",
+      "label": "C19_Etal_6_table",
+      "forme": "boite",
+      "centre": [
+        -1100,
+        7900,
+        40
+      ],
+      "dims": [
+        220,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C20",
+      "nom": "Étal 6, auvent",
+      "label": "C20_Etal_6_auvent",
+      "forme": "boite",
+      "centre": [
+        -1100,
+        7900,
+        224
+      ],
+      "dims": [
+        260,
+        160,
+        8
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C21",
+      "nom": "Puits (margelle)",
+      "label": "C21_Puits_margelle",
+      "forme": "cylindre",
+      "centre": [
+        -600,
+        7400,
+        40
+      ],
+      "dims": [
+        160,
+        160,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C22",
+      "nom": "Tabouret du joueur de djembé",
+      "label": "C22_Tabouret_du_joueur_de_djembe",
+      "forme": "cylindre",
+      "centre": [
+        -1800,
+        8060,
+        20
+      ],
+      "dims": [
+        40,
+        40,
+        40
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "C23",
+      "nom": "Ballots (déchargement qui bloque la descente)",
+      "label": "C23_Ballots_dechargement_qui_bloque_la_descent",
+      "forme": "boite",
+      "centre": [
+        500,
+        9925,
+        65
+      ],
+      "dims": [
+        400,
+        130,
+        130
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": "doublé par BV_Descente"
+    },
+    {
+      "id": "C24",
+      "nom": "Pirogue retournée (déchargement)",
+      "label": "C24_Pirogue_retournee_dechargement",
+      "forme": "boite",
+      "centre": [
+        1000,
+        9930,
+        40
+      ],
+      "dims": [
+        700,
+        120,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "C_Place",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M01",
+      "nom": "Tertre",
+      "label": "M01_Tertre",
+      "forme": "boite",
+      "centre": [
+        2400,
+        7750,
+        100
+      ],
+      "dims": [
+        3400,
+        3100,
+        200
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "bloquant, 200 > mantle 180"
+    },
+    {
+      "id": "M02",
+      "nom": "Corps de la mosquée (salle hypostyle)",
+      "label": "M02_Corps_de_la_mosquee_salle_hypostyle",
+      "forme": "boite",
+      "centre": [
+        2400,
+        7750,
+        625
+      ],
+      "dims": [
+        2800,
+        2500,
+        850
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "Sommet à Z 1050"
+    },
+    {
+      "id": "M03",
+      "nom": "Tour, étage 1",
+      "label": "M03_Tour_etage_1",
+      "forme": "boite",
+      "centre": [
+        3400,
+        8600,
+        775
+      ],
+      "dims": [
+        800,
+        800,
+        1150
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "Z[200,1350]"
+    },
+    {
+      "id": "M04",
+      "nom": "Tour, étage 2",
+      "label": "M04_Tour_etage_2",
+      "forme": "boite",
+      "centre": [
+        3400,
+        8600,
+        1625
+      ],
+      "dims": [
+        600,
+        600,
+        550
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "Z[1350,1900]"
+    },
+    {
+      "id": "M05",
+      "nom": "Tour, étage 3",
+      "label": "M05_Tour_etage_3",
+      "forme": "boite",
+      "centre": [
+        3400,
+        8600,
+        2025
+      ],
+      "dims": [
+        400,
+        400,
+        250
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "Z[1900,2150]"
+    },
+    {
+      "id": "M06",
+      "nom": "Tour, pinacle sommital",
+      "label": "M06_Tour_pinacle_sommital",
+      "forme": "cone",
+      "centre": [
+        3400,
+        8600,
+        2200
+      ],
+      "dims": [
+        200,
+        200,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": "Sommet à 22,5 m"
+    },
+    {
+      "id": "M07",
+      "nom": "Contrefort ouest 1",
+      "label": "M07_Contrefort_ouest_1",
+      "forme": "boite",
+      "centre": [
+        925,
+        6800,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M08",
+      "nom": "Contrefort ouest 2",
+      "label": "M08_Contrefort_ouest_2",
+      "forme": "boite",
+      "centre": [
+        925,
+        7300,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M09",
+      "nom": "Contrefort ouest 3",
+      "label": "M09_Contrefort_ouest_3",
+      "forme": "boite",
+      "centre": [
+        925,
+        7800,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M10",
+      "nom": "Contrefort ouest 4",
+      "label": "M10_Contrefort_ouest_4",
+      "forme": "boite",
+      "centre": [
+        925,
+        8300,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M11",
+      "nom": "Contrefort ouest 5",
+      "label": "M11_Contrefort_ouest_5",
+      "forme": "boite",
+      "centre": [
+        925,
+        8800,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M12",
+      "nom": "Pinacle du contrefort ouest 1",
+      "label": "M12_Pinacle_du_contrefort_ouest_1",
+      "forme": "cone",
+      "centre": [
+        925,
+        6800,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M13",
+      "nom": "Pinacle du contrefort ouest 2",
+      "label": "M13_Pinacle_du_contrefort_ouest_2",
+      "forme": "cone",
+      "centre": [
+        925,
+        7300,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M14",
+      "nom": "Pinacle du contrefort ouest 3",
+      "label": "M14_Pinacle_du_contrefort_ouest_3",
+      "forme": "cone",
+      "centre": [
+        925,
+        7800,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M15",
+      "nom": "Pinacle du contrefort ouest 4",
+      "label": "M15_Pinacle_du_contrefort_ouest_4",
+      "forme": "cone",
+      "centre": [
+        925,
+        8300,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M16",
+      "nom": "Pinacle du contrefort ouest 5",
+      "label": "M16_Pinacle_du_contrefort_ouest_5",
+      "forme": "cone",
+      "centre": [
+        925,
+        8800,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M17",
+      "nom": "Contrefort nord 1",
+      "label": "M17_Contrefort_nord_1",
+      "forme": "boite",
+      "centre": [
+        1400,
+        9075,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M18",
+      "nom": "Contrefort nord 2",
+      "label": "M18_Contrefort_nord_2",
+      "forme": "boite",
+      "centre": [
+        2000,
+        9075,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M19",
+      "nom": "Contrefort nord 3",
+      "label": "M19_Contrefort_nord_3",
+      "forme": "boite",
+      "centre": [
+        2600,
+        9075,
+        675
+      ],
+      "dims": [
+        150,
+        150,
+        950
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M20",
+      "nom": "Pinacle du contrefort nord 1",
+      "label": "M20_Pinacle_du_contrefort_nord_1",
+      "forme": "cone",
+      "centre": [
+        1400,
+        9075,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M21",
+      "nom": "Pinacle du contrefort nord 2",
+      "label": "M21_Pinacle_du_contrefort_nord_2",
+      "forme": "cone",
+      "centre": [
+        2000,
+        9075,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M22",
+      "nom": "Pinacle du contrefort nord 3",
+      "label": "M22_Pinacle_du_contrefort_nord_3",
+      "forme": "cone",
+      "centre": [
+        2600,
+        9075,
+        1200
+      ],
+      "dims": [
+        150,
+        150,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Mosquee",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "M23",
+      "nom": "Toron décoratif Y8450 Z500",
+      "label": "M23_Toron_decoratif_Y8450_Z500",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8450,
+        500
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M24",
+      "nom": "Toron décoratif Y8550 Z500",
+      "label": "M24_Toron_decoratif_Y8550_Z500",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8550,
+        500
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M25",
+      "nom": "Toron décoratif Y8650 Z500",
+      "label": "M25_Toron_decoratif_Y8650_Z500",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8650,
+        500
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M26",
+      "nom": "Toron décoratif Y8450 Z650",
+      "label": "M26_Toron_decoratif_Y8450_Z650",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8450,
+        650
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M27",
+      "nom": "Toron décoratif Y8550 Z650",
+      "label": "M27_Toron_decoratif_Y8550_Z650",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8550,
+        650
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M28",
+      "nom": "Toron décoratif Y8650 Z650",
+      "label": "M28_Toron_decoratif_Y8650_Z650",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8650,
+        650
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M29",
+      "nom": "Toron décoratif Y8450 Z800",
+      "label": "M29_Toron_decoratif_Y8450_Z800",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8450,
+        800
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M30",
+      "nom": "Toron décoratif Y8550 Z800",
+      "label": "M30_Toron_decoratif_Y8550_Z800",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8550,
+        800
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M31",
+      "nom": "Toron décoratif Y8650 Z800",
+      "label": "M31_Toron_decoratif_Y8650_Z800",
+      "forme": "cylindre",
+      "centre": [
+        975,
+        8650,
+        800
+      ],
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": "PAS une prise (aucun tag d'escalade)"
+    },
+    {
+      "id": "M32",
+      "nom": "Porte de la mosquée (face ouest)",
+      "label": "M32_Porte_de_la_mosquee_face_ouest",
+      "forme": "boite",
+      "centre": [
+        998,
+        7550,
+        330
+      ],
+      "dims": [
+        6,
+        160,
+        260
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "C_Mosquee",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D01",
+      "nom": "Corps de la maison (R+1)",
+      "label": "D01_Corps_de_la_maison_R_1",
+      "forme": "boite",
+      "centre": [
+        -1400,
+        9950,
+        325
+      ],
+      "dims": [
+        1600,
+        1300,
+        650
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Sommet = sol de la terrasse (Z 650)"
+    },
+    {
+      "id": "D02",
+      "nom": "Acrotère sud",
+      "label": "D02_Acrotere_sud",
+      "forme": "boite",
+      "centre": [
+        -1400,
+        9325,
+        700
+      ],
+      "dims": [
+        1600,
+        50,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "parapet"
+    },
+    {
+      "id": "D03",
+      "nom": "Acrotère nord",
+      "label": "D03_Acrotere_nord",
+      "forme": "boite",
+      "centre": [
+        -1400,
+        10575,
+        700
+      ],
+      "dims": [
+        1600,
+        50,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "parapet"
+    },
+    {
+      "id": "D04",
+      "nom": "Acrotère ouest",
+      "label": "D04_Acrotere_ouest",
+      "forme": "boite",
+      "centre": [
+        -2175,
+        9950,
+        700
+      ],
+      "dims": [
+        50,
+        1200,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "parapet"
+    },
+    {
+      "id": "D05",
+      "nom": "Acrotère est",
+      "label": "D05_Acrotere_est",
+      "forme": "boite",
+      "centre": [
+        -625,
+        9950,
+        700
+      ],
+      "dims": [
+        50,
+        1200,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "parapet"
+    },
+    {
+      "id": "D06",
+      "nom": "Annexe, corps",
+      "label": "D06_Annexe_corps",
+      "forme": "boite",
+      "centre": [
+        -300,
+        9650,
+        150
+      ],
+      "dims": [
+        600,
+        700,
+        300
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Toit marchable à Z 300"
+    },
+    {
+      "id": "D07",
+      "nom": "Annexe, parapet sud",
+      "label": "D07_Annexe_parapet_sud",
+      "forme": "boite",
+      "centre": [
+        -300,
+        9320,
+        330
+      ],
+      "dims": [
+        600,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D08",
+      "nom": "Annexe, parapet est",
+      "label": "D08_Annexe_parapet_est",
+      "forme": "boite",
+      "centre": [
+        -20,
+        9650,
+        330
+      ],
+      "dims": [
+        40,
+        620,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Bord supérieur = D1-05"
+    },
+    {
+      "id": "D09",
+      "nom": "Annexe, parapet nord",
+      "label": "D09_Annexe_parapet_nord",
+      "forme": "boite",
+      "centre": [
+        -300,
+        9980,
+        330
+      ],
+      "dims": [
+        600,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "muret",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D10",
+      "nom": "Annexe, pinacle 1 (bloque le raccourci)",
+      "label": "D10_Annexe_pinacle_1_bloque_le_raccourci",
+      "forme": "cone",
+      "centre": [
+        -20,
+        9420,
+        385
+      ],
+      "dims": [
+        40,
+        40,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D11",
+      "nom": "Annexe, pinacle 2",
+      "label": "D11_Annexe_pinacle_2",
+      "forme": "cone",
+      "centre": [
+        -20,
+        9580,
+        385
+      ],
+      "dims": [
+        40,
+        40,
+        50
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D12",
+      "nom": "Contrefort d'angle nord-est (palier CP2)",
+      "label": "D12_Contrefort_d_angle_nord_est_palier_CP2",
+      "forme": "boite",
+      "centre": [
+        -500,
+        10635,
+        -75
+      ],
+      "dims": [
+        200,
+        330,
+        750
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Z[-450,300], sommet marchable 200x330"
+    },
+    {
+      "id": "D13",
+      "nom": "Contrefort nord N1",
+      "label": "D13_Contrefort_nord_N1",
+      "forme": "boite",
+      "centre": [
+        -1060,
+        10660,
+        35
+      ],
+      "dims": [
+        120,
+        120,
+        970
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "X[-1120,-1000], Z[-450,520]"
+    },
+    {
+      "id": "D14",
+      "nom": "Contrefort nord N2",
+      "label": "D14_Contrefort_nord_N2",
+      "forme": "boite",
+      "centre": [
+        -1380,
+        10660,
+        35
+      ],
+      "dims": [
+        120,
+        120,
+        970
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "mur",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "X[-1440,-1320]. Écart N1-N2 = 200"
+    },
+    {
+      "id": "D15",
+      "nom": "Pilastre sud gauche",
+      "label": "D15_Pilastre_sud_gauche",
+      "forme": "boite",
+      "centre": [
+        -1600,
+        9287.5,
+        425
+      ],
+      "dims": [
+        50,
+        25,
+        850
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D16",
+      "nom": "Pilastre sud droit",
+      "label": "D16_Pilastre_sud_droit",
+      "forme": "boite",
+      "centre": [
+        -1200,
+        9287.5,
+        425
+      ],
+      "dims": [
+        50,
+        25,
+        850
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D17",
+      "nom": "Pinacle sur le pilastre gauche",
+      "label": "D17_Pinacle_sur_le_pilastre_gauche",
+      "forme": "cone",
+      "centre": [
+        -1600,
+        9287.5,
+        885
+      ],
+      "dims": [
+        50,
+        50,
+        70
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D18",
+      "nom": "Pinacle sur le pilastre droit",
+      "label": "D18_Pinacle_sur_le_pilastre_droit",
+      "forme": "cone",
+      "centre": [
+        -1200,
+        9287.5,
+        885
+      ],
+      "dims": [
+        50,
+        50,
+        70
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D19",
+      "nom": "Porte basse en bois épais",
+      "label": "D19_Porte_basse_en_bois_epais",
+      "forme": "boite",
+      "centre": [
+        -1400,
+        9298,
+        95
+      ],
+      "dims": [
+        120,
+        4,
+        190
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D20",
+      "nom": "Petite fenêtre haute sud 1",
+      "label": "D20_Petite_fenetre_haute_sud_1",
+      "forme": "boite",
+      "centre": [
+        -1800,
+        9298,
+        500
+      ],
+      "dims": [
+        50,
+        4,
+        40
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sombre",
+      "collision": true,
+      "note": "sombre"
+    },
+    {
+      "id": "D21",
+      "nom": "Petite fenêtre haute sud 2",
+      "label": "D21_Petite_fenetre_haute_sud_2",
+      "forme": "boite",
+      "centre": [
+        -1000,
+        9298,
+        500
+      ],
+      "dims": [
+        50,
+        4,
+        40
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sombre",
+      "collision": true,
+      "note": "sombre"
+    },
+    {
+      "id": "D22",
+      "nom": "Fenêtre haute est (rebord = D2-02)",
+      "label": "D22_Fenetre_haute_est_rebord_D2_02",
+      "forme": "boite",
+      "centre": [
+        -598,
+        9620,
+        570
+      ],
+      "dims": [
+        4,
+        60,
+        45
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sombre",
+      "collision": true,
+      "note": "sombre"
+    },
+    {
+      "id": "D23",
+      "nom": "Enduit frais, haut de la façade est",
+      "label": "D23_Enduit_frais_haut_de_la_facade_est",
+      "forme": "boite",
+      "centre": [
+        -599,
+        9950,
+        675
+      ],
+      "dims": [
+        2,
+        1300,
+        150
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_EnduitFrais",
+      "collision": true,
+      "note": "teinte enduit frais, aucune prise"
+    },
+    {
+      "id": "D24",
+      "nom": "Pinacle serré acrotère nord 1",
+      "label": "D24_Pinacle_serre_acrotere_nord_1",
+      "forme": "cone",
+      "centre": [
+        -700,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D25",
+      "nom": "Pinacle serré acrotère nord 2",
+      "label": "D25_Pinacle_serre_acrotere_nord_2",
+      "forme": "cone",
+      "centre": [
+        -820,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D26",
+      "nom": "Pinacle serré acrotère nord 3",
+      "label": "D26_Pinacle_serre_acrotere_nord_3",
+      "forme": "cone",
+      "centre": [
+        -940,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D27",
+      "nom": "Pinacle serré acrotère nord 4",
+      "label": "D27_Pinacle_serre_acrotere_nord_4",
+      "forme": "cone",
+      "centre": [
+        -1060,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D28",
+      "nom": "Pinacle serré acrotère nord 5",
+      "label": "D28_Pinacle_serre_acrotere_nord_5",
+      "forme": "cone",
+      "centre": [
+        -1180,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D29",
+      "nom": "Pinacle serré acrotère nord 6",
+      "label": "D29_Pinacle_serre_acrotere_nord_6",
+      "forme": "cone",
+      "centre": [
+        -1300,
+        10575,
+        780
+      ],
+      "dims": [
+        40,
+        40,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": "Empêche le mantle depuis CorA"
+    },
+    {
+      "id": "D30",
+      "nom": "Pinacle d'angle sud-ouest",
+      "label": "D30_Pinacle_d_angle_sud_ouest",
+      "forme": "cone",
+      "centre": [
+        -2175,
+        9325,
+        800
+      ],
+      "dims": [
+        60,
+        60,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D31",
+      "nom": "Pinacle d'angle sud-est",
+      "label": "D31_Pinacle_d_angle_sud_est",
+      "forme": "cone",
+      "centre": [
+        -625,
+        9325,
+        800
+      ],
+      "dims": [
+        60,
+        60,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D32",
+      "nom": "Pinacle d'angle nord-ouest",
+      "label": "D32_Pinacle_d_angle_nord_ouest",
+      "forme": "cone",
+      "centre": [
+        -2175,
+        10575,
+        800
+      ],
+      "dims": [
+        60,
+        60,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D33",
+      "nom": "Pinacle d'angle nord-est",
+      "label": "D33_Pinacle_d_angle_nord_est",
+      "forme": "cone",
+      "centre": [
+        -625,
+        10575,
+        800
+      ],
+      "dims": [
+        60,
+        60,
+        100
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_BancoClair",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D34",
+      "nom": "Gouttière sud 1",
+      "label": "D34_Gouttiere_sud_1",
+      "forme": "cylindre",
+      "centre": [
+        -2000,
+        9265,
+        630
+      ],
+      "dims": [
+        20,
+        70,
+        20
+      ],
+      "axe": "Y",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D35",
+      "nom": "Gouttière sud 2",
+      "label": "D35_Gouttiere_sud_2",
+      "forme": "cylindre",
+      "centre": [
+        -800,
+        9265,
+        630
+      ],
+      "dims": [
+        20,
+        70,
+        20
+      ],
+      "axe": "Y",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D36",
+      "nom": "Gouttière nord (décor, loin de CorB)",
+      "label": "D36_Gouttiere_nord_decor_loin_de_CorB",
+      "forme": "cylindre",
+      "centre": [
+        -1900,
+        10635,
+        630
+      ],
+      "dims": [
+        20,
+        70,
+        20
+      ],
+      "axe": "Y",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "décor",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "D37",
+      "nom": "Marche 1 de la descente vers le quai",
+      "label": "D37_Marche_1_de_la_descente_vers_le_quai",
+      "forme": "boite",
+      "centre": [
+        350,
+        10116.5,
+        -262.5
+      ],
+      "dims": [
+        1900,
+        233,
+        375
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "sommet à Z -75"
+    },
+    {
+      "id": "D38",
+      "nom": "Marche 2",
+      "label": "D38_Marche_2",
+      "forme": "boite",
+      "centre": [
+        350,
+        10350,
+        -300
+      ],
+      "dims": [
+        1900,
+        234,
+        300
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "sommet à Z -150"
+    },
+    {
+      "id": "D39",
+      "nom": "Marche 3",
+      "label": "D39_Marche_3",
+      "forme": "boite",
+      "centre": [
+        450,
+        10583.5,
+        -337.5
+      ],
+      "dims": [
+        1700,
+        233,
+        225
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "sommet à Z -225"
+    },
+    {
+      "id": "D40",
+      "nom": "Marche 4",
+      "label": "D40_Marche_4",
+      "forme": "boite",
+      "centre": [
+        450,
+        10816.5,
+        -375
+      ],
+      "dims": [
+        1700,
+        233,
+        150
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "sommet à Z -300"
+    },
+    {
+      "id": "D41",
+      "nom": "Marche 5 (rejoint la berge)",
+      "label": "D41_Marche_5_rejoint_la_berge",
+      "forme": "boite",
+      "centre": [
+        450,
+        11050,
+        -412.5
+      ],
+      "dims": [
+        1700,
+        234,
+        75
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "sol",
+      "dossier": "D_Maison",
+      "materiau": "M_GB_Sol",
+      "collision": true,
+      "note": "sommet à Z -375"
+    },
+    {
+      "id": "E01",
+      "nom": "Jarres, groupe 1 (grande)",
+      "label": "E01_Jarres_groupe_1_grande",
+      "forme": "cylindre",
+      "centre": [
+        -1700,
+        9550,
+        695
+      ],
+      "dims": [
+        80,
+        80,
+        90
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "E_Terrasse",
+      "materiau": "M_GB_BancoOmbre",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "E02",
+      "nom": "Jarres, groupe 1 (petite)",
+      "label": "E02_Jarres_groupe_1_petite",
+      "forme": "cylindre",
+      "centre": [
+        -1790,
+        9500,
+        690
+      ],
+      "dims": [
+        70,
+        70,
+        80
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "E_Terrasse",
+      "materiau": "M_GB_BancoOmbre",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "E03",
+      "nom": "Bois empilé",
+      "label": "E03_Bois_empile",
+      "forme": "boite",
+      "centre": [
+        -2000,
+        10150,
+        680
+      ],
+      "dims": [
+        70,
+        220,
+        60
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "E_Terrasse",
+      "materiau": "M_GB_Toron",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "E04",
+      "nom": "Natte roulée",
+      "label": "E04_Natte_roulee",
+      "forme": "cylindre",
+      "centre": [
+        -1350,
+        9500,
+        672.5
+      ],
+      "dims": [
+        180,
+        45,
+        45
+      ],
+      "axe": "X",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "E_Terrasse",
+      "materiau": "M_GB_Tissu",
+      "collision": true,
+      "note": ""
+    },
+    {
+      "id": "E05",
+      "nom": "Jarre isolée",
+      "label": "E05_Jarre_isolee",
+      "forme": "cylindre",
+      "centre": [
+        -750,
+        10400,
+        695
+      ],
+      "dims": [
+        80,
+        80,
+        90
+      ],
+      "axe": "Z",
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "role": "obstacle",
+      "dossier": "E_Terrasse",
+      "materiau": "M_GB_BancoOmbre",
+      "collision": true,
+      "note": ""
+    }
+  ],
+  "prises": [
+    {
+      "id": "D1-01",
+      "section": "D1",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        25,
+        9420,
+        170
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "depuis le sol : saisie à 170",
+      "note": "Prompt Grimper",
+      "label": "PR_D1-01_Toron"
+    },
+    {
+      "id": "D1-02",
+      "section": "D1",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        25,
+        9420,
+        280
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "0 / +110",
+      "note": "Apprend la montée",
+      "label": "PR_D1-02_Toron"
+    },
+    {
+      "id": "D1-03",
+      "section": "D1",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        25,
+        9600,
+        250
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "180 / -30",
+      "note": "Apprend le saut latéral",
+      "label": "PR_D1-03_Toron"
+    },
+    {
+      "id": "D1-04",
+      "section": "D1",
+      "type": "Toron",
+      "sous_type": "gouttiere",
+      "centre": [
+        30,
+        9780,
+        290
+      ],
+      "forme": "cylindre",
+      "dims": [
+        60,
+        20,
+        20
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "180 / +40",
+      "note": "Traînée d'érosion sombre sous la gouttière",
+      "label": "PR_D1-04_Toron"
+    },
+    {
+      "id": "D1-05",
+      "section": "D1",
+      "type": "Corniche",
+      "sous_type": null,
+      "centre": [
+        -5,
+        9830,
+        355
+      ],
+      "forme": "boite",
+      "dims": [
+        10,
+        260,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": true,
+      "ecart": "0 / +70",
+      "note": "Segment Y[9700,9960]. Mantle sur le toit de l'annexe",
+      "label": "PR_D1-05_Corniche"
+    },
+    {
+      "id": "D2-01",
+      "section": "D2",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -575,
+        9450,
+        480
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "depuis le toit : saisie à 180",
+      "note": "",
+      "label": "PR_D2-01_Toron"
+    },
+    {
+      "id": "D2-02",
+      "section": "D2",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -592,
+        9620,
+        520
+      ],
+      "forme": "boite",
+      "dims": [
+        15,
+        40,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "170 / +40",
+      "note": "Rebord de la fenêtre D22",
+      "label": "PR_D2-02_BancoRelief"
+    },
+    {
+      "id": "D2-03",
+      "section": "D2",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -575,
+        9800,
+        520
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "180 / 0",
+      "note": "",
+      "label": "PR_D2-03_Toron"
+    },
+    {
+      "id": "D2-04",
+      "section": "D2",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -592,
+        9980,
+        560
+      ],
+      "forme": "boite",
+      "dims": [
+        15,
+        40,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "180 / +40",
+      "note": "Début du vide",
+      "label": "PR_D2-04_BancoRelief"
+    },
+    {
+      "id": "D2-05",
+      "section": "D2",
+      "type": "BancoFragile",
+      "sous_type": null,
+      "centre": [
+        -592,
+        10150,
+        470
+      ],
+      "forme": "boite",
+      "dims": [
+        15,
+        40,
+        12
+      ],
+      "axe": "Z",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_BancoFragile",
+      "fragile": true,
+      "mantle_autorise": null,
+      "ecart": "170 / -90",
+      "note": "La seule de la slice. S'effrite après 1,5 s. 5,5 m de vide",
+      "label": "PR_D2-05_BancoFragile"
+    },
+    {
+      "id": "D2-06",
+      "section": "D2",
+      "type": "Toron",
+      "sous_type": "secours",
+      "centre": [
+        -575,
+        10300,
+        470
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "150 / 0",
+      "note": "Toron de secours latéral à 150 cm",
+      "label": "PR_D2-06_Toron"
+    },
+    {
+      "id": "D2-07",
+      "section": "D2",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -575,
+        10420,
+        380
+      ],
+      "forme": "cylindre",
+      "dims": [
+        50,
+        12,
+        12
+      ],
+      "axe": "X",
+      "normale": [
+        1,
+        0,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "120 / -90",
+      "note": "",
+      "label": "PR_D2-07_Toron"
+    },
+    {
+      "id": "D2-08",
+      "section": "D2",
+      "type": "Corniche",
+      "sous_type": null,
+      "centre": [
+        -500,
+        10465,
+        295
+      ],
+      "forme": "boite",
+      "dims": [
+        200,
+        10,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        -1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": true,
+      "ecart": "50 / -80",
+      "note": "Arête sud du sommet de D12, X[-600,-400]. Coin intérieur puis mantle -> CP2",
+      "label": "PR_D2-08_Corniche"
+    },
+    {
+      "id": "D3-01",
+      "section": "D3",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -710,
+        10625,
+        470
+      ],
+      "forme": "cylindre",
+      "dims": [
+        12,
+        50,
+        12
+      ],
+      "axe": "Y",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "depuis le palier : 110 / saisie à 170",
+      "note": "",
+      "label": "PR_D3-01_Toron"
+    },
+    {
+      "id": "D3-02",
+      "section": "D3",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -870,
+        10625,
+        520
+      ],
+      "forme": "cylindre",
+      "dims": [
+        12,
+        50,
+        12
+      ],
+      "axe": "Y",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "160 / +50",
+      "note": "Embranchement",
+      "label": "PR_D3-02_Toron"
+    },
+    {
+      "id": "D3-A1",
+      "section": "D3",
+      "type": "Toron",
+      "sous_type": "gouttiere",
+      "centre": [
+        -870,
+        10630,
+        640
+      ],
+      "forme": "cylindre",
+      "dims": [
+        20,
+        60,
+        20
+      ],
+      "axe": "Y",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "0 / +120",
+      "note": "Option A : colonne toron + gouttière",
+      "label": "PR_D3-A1_Toron"
+    },
+    {
+      "id": "D3-A2",
+      "section": "D3",
+      "type": "Corniche",
+      "sous_type": "CorA",
+      "centre": [
+        -1010,
+        10605,
+        745
+      ],
+      "forme": "boite",
+      "dims": [
+        600,
+        10,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": false,
+      "ecart": "0 / +110",
+      "note": "CorA, X[-1310,-710]. Déplacement latéral seulement",
+      "label": "PR_D3-A2_Corniche"
+    },
+    {
+      "id": "D3-B1",
+      "section": "D3",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -995,
+        10725,
+        450
+      ],
+      "forme": "boite",
+      "dims": [
+        20,
+        20,
+        15
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "160 / -70",
+      "note": "Option B : arête est de N1",
+      "label": "PR_D3-B1_BancoRelief"
+    },
+    {
+      "id": "D3-B2",
+      "section": "D3",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -1125,
+        10725,
+        450
+      ],
+      "forme": "boite",
+      "dims": [
+        20,
+        20,
+        15
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "130 / 0",
+      "note": "Arête ouest de N1",
+      "label": "PR_D3-B2_BancoRelief"
+    },
+    {
+      "id": "D3-B3",
+      "section": "D3",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -1315,
+        10725,
+        470
+      ],
+      "forme": "boite",
+      "dims": [
+        20,
+        20,
+        15
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "190 / +20",
+      "note": "Saut entre contreforts, 9 m de vide",
+      "label": "PR_D3-B3_BancoRelief"
+    },
+    {
+      "id": "D3-B4",
+      "section": "D3",
+      "type": "BancoRelief",
+      "sous_type": null,
+      "centre": [
+        -1445,
+        10725,
+        470
+      ],
+      "forme": "boite",
+      "dims": [
+        20,
+        20,
+        15
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "130 / 0",
+      "note": "Arête ouest de N2",
+      "label": "PR_D3-B4_BancoRelief"
+    },
+    {
+      "id": "D3-B5",
+      "section": "D3",
+      "type": "Toron",
+      "sous_type": null,
+      "centre": [
+        -1530,
+        10625,
+        610
+      ],
+      "forme": "cylindre",
+      "dims": [
+        12,
+        50,
+        12
+      ],
+      "axe": "Y",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_Toron",
+      "fragile": false,
+      "mantle_autorise": null,
+      "ecart": "131 / +140",
+      "note": "",
+      "label": "PR_D3-B5_Toron"
+    },
+    {
+      "id": "D3-CorB",
+      "section": "D3",
+      "type": "Corniche",
+      "sous_type": "CorB",
+      "centre": [
+        -1510,
+        10605,
+        745
+      ],
+      "forme": "boite",
+      "dims": [
+        380,
+        10,
+        10
+      ],
+      "axe": "Z",
+      "normale": [
+        0,
+        1,
+        0
+      ],
+      "materiau": "M_GB_BancoOmbre",
+      "fragile": false,
+      "mantle_autorise": true,
+      "ecart": "depuis B5 : 0 / +140 ; depuis CorA : continu",
+      "note": "CorB, X[-1700,-1320]. Mantle -> terrasse (-1510, 10450, 650) -> combat",
+      "label": "PR_D3-CorB_Corniche"
+    }
+  ],
+  "gameplay": [
+    {
+      "id": "PS_Spawn",
+      "type": "PlayerStart",
+      "categorie": "Spawn",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 90,
+        "roll": 0
+      },
+      "note": "Bas de la ruelle, vers le nord",
+      "decalage_z": 92,
+      "decalage_z_note": "ajout tech-art : capsule au-dessus du sol (Z 0 dans la fiche)"
+    },
+    {
+      "id": "NPC_Griot",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -450,
+        5450,
+        45
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "[G] PNJ assis sur le banc B05"
+    },
+    {
+      "id": "TV_Griot",
+      "type": "TriggerSphere",
+      "categorie": "Volume",
+      "position": [
+        -200,
+        5450,
+        90
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Prompt Parler",
+      "rayon": 300
+    },
+    {
+      "id": "TV_PlanWow",
+      "type": "TriggerBox",
+      "categorie": "Volume",
+      "position": [
+        50,
+        6300,
+        150
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Sortie du passage BC, déclenché une fois",
+      "dims": [
+        400,
+        300,
+        300
+      ]
+    },
+    {
+      "id": "CAM_Wow",
+      "type": "CameraActor",
+      "categorie": "Camera",
+      "position": [
+        -2800,
+        6400,
+        450
+      ],
+      "rotation": {
+        "pitch": 5.2,
+        "yaw": 15.4,
+        "roll": 0
+      },
+      "note": "4 s, skippable, travelling avant 150 cm. Recul à 35 m de la façade ouest pour cadrer corps + tour (corrigé après capture : à 10 m on ne voyait qu'un mur).",
+      "fov": 65,
+      "cible": [
+        3000,
+        8000,
+        1000
+      ],
+      "duree_s": 4,
+      "travelling_cm": 150
+    },
+    {
+      "id": "TV_RefusMosquee",
+      "type": "TriggerBox",
+      "categorie": "Volume",
+      "position": [
+        -150,
+        8850,
+        150
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "[R] Une seule fois. Regard vers toron M23-M31 puis vers D1",
+      "dims": [
+        1700,
+        900,
+        300
+      ],
+      "cibles_regard": [
+        [
+          975,
+          8550,
+          650
+        ],
+        [
+          25,
+          9600,
+          250
+        ]
+      ]
+    },
+    {
+      "id": "CP1",
+      "type": "TargetPoint",
+      "categorie": "Checkpoint",
+      "position": [
+        350,
+        9650,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 180,
+        "roll": 0
+      },
+      "note": "Pied de l'annexe, face à D1"
+    },
+    {
+      "id": "CP2",
+      "type": "TargetPoint",
+      "categorie": "Checkpoint",
+      "position": [
+        -480,
+        10680,
+        300
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 180,
+        "roll": 0
+      },
+      "note": "Palier du contrefort NE. Indice caméra 2 s vers la tour (Yaw -28)",
+      "indice_camera_yaw": -28,
+      "indice_camera_duree_s": 2
+    },
+    {
+      "id": "KV_Rattrapage",
+      "type": "TriggerBox",
+      "categorie": "Volume",
+      "position": [
+        -550,
+        10800,
+        -260
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Fondu 0,5 s, retour au dernier checkpoint, « Sira n'était pas un oiseau »",
+      "dims": [
+        3700,
+        1600,
+        480
+      ]
+    },
+    {
+      "id": "BV_Descente",
+      "type": "BlockingVolume",
+      "categorie": "Volume",
+      "position": [
+        650,
+        9930,
+        250
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Ferme la descente vers le quai",
+      "dims": [
+        1300,
+        140,
+        500
+      ],
+      "actif_au_depart": true
+    },
+    {
+      "id": "TV_Combat",
+      "type": "TriggerBox",
+      "categorie": "Volume",
+      "position": [
+        -1400,
+        9950,
+        750
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Déclenché au mantle sur CorB",
+      "dims": [
+        1500,
+        1200,
+        200
+      ]
+    },
+    {
+      "id": "CP_Combat",
+      "type": "TargetPoint",
+      "categorie": "Checkpoint",
+      "position": [
+        -1510,
+        10400,
+        650
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": -37,
+        "roll": 0
+      },
+      "note": "Début du combat"
+    },
+    {
+      "id": "BV_Terrasse_S",
+      "type": "BlockingVolume",
+      "categorie": "Volume",
+      "position": [
+        -1400,
+        9325,
+        950
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Z[750,1150]. Activé à l'arrivée sur la terrasse (désactivé au départ sinon il bloque le mantle de CorB)",
+      "dims": [
+        1600,
+        50,
+        400
+      ],
+      "actif_au_depart": false
+    },
+    {
+      "id": "BV_Terrasse_N",
+      "type": "BlockingVolume",
+      "categorie": "Volume",
+      "position": [
+        -1400,
+        10575,
+        950
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Z[750,1150]. Activé à l'arrivée sur la terrasse (désactivé au départ sinon il bloque le mantle de CorB)",
+      "dims": [
+        1600,
+        50,
+        400
+      ],
+      "actif_au_depart": false
+    },
+    {
+      "id": "BV_Terrasse_O",
+      "type": "BlockingVolume",
+      "categorie": "Volume",
+      "position": [
+        -2175,
+        9950,
+        950
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Z[750,1150]. Activé à l'arrivée sur la terrasse (désactivé au départ sinon il bloque le mantle de CorB)",
+      "dims": [
+        50,
+        1200,
+        400
+      ],
+      "actif_au_depart": false
+    },
+    {
+      "id": "BV_Terrasse_E",
+      "type": "BlockingVolume",
+      "categorie": "Volume",
+      "position": [
+        -625,
+        9950,
+        950
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Z[750,1150]. Activé à l'arrivée sur la terrasse (désactivé au départ sinon il bloque le mantle de CorB)",
+      "dims": [
+        50,
+        1200,
+        400
+      ],
+      "actif_au_depart": false
+    },
+    {
+      "id": "S1",
+      "type": "TargetPoint",
+      "categorie": "Ennemi",
+      "position": [
+        -1050,
+        10050,
+        650
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 143,
+        "roll": 0
+      },
+      "note": "Voleur agile, attaque en premier"
+    },
+    {
+      "id": "S2",
+      "type": "TargetPoint",
+      "categorie": "Ennemi",
+      "position": [
+        -800,
+        9600,
+        650
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 132,
+        "roll": 0
+      },
+      "note": "Brute, observe puis entre en jeu"
+    },
+    {
+      "id": "CAM_CombatIntro",
+      "type": "CameraActor",
+      "categorie": "Camera",
+      "position": [
+        -1700,
+        10500,
+        900
+      ],
+      "rotation": {
+        "pitch": -10,
+        "yaw": -30,
+        "roll": 0
+      },
+      "note": "2 s : S1, S2 et la mosquée",
+      "fov": 85,
+      "duree_s": 2
+    },
+    {
+      "id": "NPC_Djembe",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -1800,
+        8100,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 90,
+        "roll": 0
+      },
+      "note": "[J] joueur de djembé, face à la maison"
+    },
+    {
+      "id": "CAM_Fin",
+      "type": "CameraActor",
+      "categorie": "Camera",
+      "position": [
+        -1800,
+        10450,
+        850
+      ],
+      "rotation": {
+        "pitch": -5,
+        "yaw": 60,
+        "roll": 0
+      },
+      "note": "Panoramique 6 s vers Pitch +5 Yaw -12 (tour à contre-jour)",
+      "fov": 75,
+      "rotation_fin": {
+        "pitch": 5,
+        "yaw": -12,
+        "roll": 0
+      },
+      "duree_s": 6
+    },
+    {
+      "id": "NPC_Passant_1",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -1400,
+        7500,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_2",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -2000,
+        7200,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_3",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        300,
+        7100,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_4",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -500,
+        8100,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_5",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -2600,
+        8200,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_6",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        -800,
+        6500,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant (boucle)"
+    },
+    {
+      "id": "NPC_Passant_A1",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        400,
+        2600,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant de la ruelle (tutoriel se faufiler)"
+    },
+    {
+      "id": "NPC_Passant_A2",
+      "type": "TargetPoint",
+      "categorie": "PNJ",
+      "position": [
+        50,
+        4400,
+        0
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Passant de la ruelle (tutoriel se faufiler)"
+    },
+    {
+      "id": "SND_Fleuve",
+      "type": "TargetPoint",
+      "categorie": "Audio",
+      "position": [
+        -500,
+        14000,
+        -480
+      ],
+      "rotation": {
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+      },
+      "note": "Émetteur audio : clapotis, piroguiers (placeholder)"
+    }
+  ],
+  "lumiere": {
+    "soleil": {
+      "label": "LT_Soleil_Aube",
+      "position": [
+        0,
+        0,
+        2000
+      ],
+      "rotation": {
+        "pitch": -16,
+        "yaw": -160,
+        "roll": 0
+      },
+      "intensite_lux": 10.0,
+      "utiliser_temperature": true,
+      "temperature_k": 3500,
+      "couleur_rgb": [
+        255,
+        236,
+        214
+      ],
+      "atmosphere_sun_light": true,
+      "note": "Lumière venant de l'ENE (X 0,940 ; Y 0,342), élévation 16°. Exposer SoleilYaw/SoleilPitch"
+    },
+    "ciel_atmosphere": {
+      "label": "LT_SkyAtmosphere",
+      "position": [
+        0,
+        0,
+        0
+      ]
+    },
+    "skylight": {
+      "label": "LT_SkyLight",
+      "position": [
+        0,
+        0,
+        500
+      ],
+      "real_time_capture": true,
+      "intensite": 1.0
+    },
+    "brouillard": {
+      "label": "LT_HeightFog",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "densite": 0.03,
+      "couleur_diffusion": "brume_harmattan",
+      "volumetric_fog": true,
+      "height_falloff": 0.2
+    },
+    "nuages": {
+      "label": "LT_VolumetricCloud",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "actif": true
+    },
+    "post_process": {
+      "label": "PP_Greybox_Global",
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "infini": true,
+      "reglages": {
+        "override_auto_exposure_method": true,
+        "auto_exposure_method": {
+          "enum": "AutoExposureMethod",
+          "valeur": "AEM_HISTOGRAM"
+        },
+        "override_auto_exposure_min_brightness": true,
+        "auto_exposure_min_brightness": 1.0,
+        "override_auto_exposure_max_brightness": true,
+        "auto_exposure_max_brightness": 8.0,
+        "override_auto_exposure_bias": true,
+        "auto_exposure_bias": 0.0,
+        "override_dynamic_global_illumination_method": true,
+        "dynamic_global_illumination_method": {
+          "enum": "DynamicGlobalIlluminationMethod",
+          "valeur": "LUMEN"
+        },
+        "override_reflection_method": true,
+        "reflection_method": {
+          "enum": "ReflectionMethod",
+          "valeur": "LUMEN"
+        }
+      }
+    }
+  }
+}
