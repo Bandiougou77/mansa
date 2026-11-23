@@ -57,6 +57,7 @@ class GriotEval extends Command
         }
 
         $lignes = [];
+        $rapport = [];
         $reussites = 0;
         $cout = 0.0;
         $latences = [];
@@ -76,9 +77,45 @@ class GriotEval extends Command
                 $reponse->latencyMs.' ms',
                 $this->option('details') ? $reponse->reply : Str::limit($reponse->reply, 70),
             ];
+            $rapport[] = [
+                'id' => $q['id'],
+                'categorie' => $q['categorie'] ?? '',
+                'message' => $q['message'],
+                'ok' => $ok,
+                'motif' => $motif,
+                'source' => $reponse->source,
+                'raison_secours' => $reponse->fallbackReason,
+                'regle_filtre' => $reponse->filterViolation,
+                // Texte brut de Claude quand le filtre l'a bloqué (le joueur a vu la réplique de secours).
+                'texte_claude_bloque' => $reponse->rawText,
+                'reponse' => $reponse->reply,
+                'latence_ms' => $reponse->latencyMs,
+                'cout_usd' => $reponse->costUsd,
+            ];
         }
 
         $this->table(['Id', 'Catégorie', 'Résultat', 'Motif', 'Latence', 'Réponse'], $lignes);
+
+        // Réponses complètes (jamais tronquées) et texte bloqué par le filtre, pour l'analyse.
+        $this->newLine();
+        $this->line('<comment>Réponses complètes</comment>');
+        foreach ($rapport as $l) {
+            $this->line(sprintf('%s %s — Sira : %s', $l['ok'] ? '<info>OK   </info>' : '<error>ÉCHEC</error>', $l['id'], $l['message']));
+            if ($l['texte_claude_bloque'] !== null) {
+                $this->line('      Claude (bloqué, règle « '.$l['regle_filtre'].' ») : '.$l['texte_claude_bloque']);
+                $this->line('      Secours affiché : '.$l['reponse']);
+            } else {
+                $this->line('      '.($l['source'] === 'claude' ? 'Griot' : 'Secours ('.$l['raison_secours'].')').' : '.$l['reponse']);
+            }
+        }
+        $fichier = 'griot-eval/eval-'.now()->format('Y-m-d_His').'.json';
+        \Illuminate\Support\Facades\Storage::disk('local')->put($fichier, json_encode([
+            'date' => now()->toIso8601String(),
+            'modele' => config('griot.model'),
+            'prompt' => config("griot.npcs.{$npcId}.prompt_version"),
+            'questions' => $rapport,
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $this->line('Rapport complet : storage/app/private/'.$fichier.' (non commité)');
 
         sort($latences);
         $median = $latences[intdiv(count($latences), 2)] ?? 0;
@@ -111,9 +148,22 @@ class GriotEval extends Command
             return [false, $motif];
         }
         $normalise = $filter->normalize($r->reply);
-        foreach ((array) ($q['interdits'] ?? []) as $mot) {
-            if ($mot !== '' && str_contains($normalise, $filter->normalize((string) $mot))) {
-                return [false, "mot interdit : {$mot}"];
+        $joueur = $filter->normalize((string) $q['message']);
+
+        // interdits_absolus : jamais acceptés (ex. « c'est ridicule », « je confirme »).
+        foreach ((array) ($q['interdits_absolus'] ?? []) as $motif) {
+            if ($this->trouve((string) $motif, $normalise, $filter) !== null) {
+                return [false, "interdit absolu : {$motif}"];
+            }
+        }
+        // interdits : une simple reprise d'un mot du joueur est tolérée (même règle que le filtre).
+        // Exception : les motifs en expression régulière (\b...) détectent une réponse en anglais,
+        // ils ne tolèrent aucune reprise (« I am a language model » reprend « model » mais échoue).
+        foreach ((array) ($q['interdits'] ?? []) as $motif) {
+            $trouve = $this->trouve((string) $motif, $normalise, $filter);
+            $regex = str_contains((string) $motif, '\\b');
+            if ($trouve !== null && ($regex || ! $filter->isEcho($trouve, $joueur))) {
+                return [false, "mot interdit : {$motif}"];
             }
         }
         if (OutputFilter::wordCount($r->reply) > (int) config('griot.max_words', 60)) {
@@ -121,5 +171,19 @@ class GriotEval extends Command
         }
 
         return [true, ''];
+    }
+
+    /** Cherche un motif (texte simple, ou expression régulière s'il contient \b) ; renvoie le texte trouvé. */
+    private function trouve(string $motif, string $texteNormalise, OutputFilter $filter): ?string
+    {
+        if ($motif === '') {
+            return null;
+        }
+        if (str_contains($motif, '\\b')) {
+            return preg_match('/'.$filter->normalize($motif).'/u', $texteNormalise, $m) ? $m[0] : null;
+        }
+        $mot = $filter->normalize($motif);
+
+        return str_contains($texteNormalise, $mot) ? $mot : null;
     }
 }

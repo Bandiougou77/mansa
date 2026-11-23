@@ -65,8 +65,8 @@ return [
     'npcs' => [
         'griot_djenne' => [
             'knowledge' => 'resources/griot/griot_djenne.json',
-            'prompt' => 'resources/prompts/griot_djenne.v1.md',
-            'prompt_version' => 'griot_djenne.v1',
+            'prompt' => 'resources/prompts/griot_djenne.v2.md',
+            'prompt_version' => 'griot_djenne.v2',
             'fallback' => 'resources/griot/fallback_griot_djenne.json',
         ],
     ],

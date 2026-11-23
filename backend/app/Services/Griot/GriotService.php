@@ -64,7 +64,8 @@ class GriotService
         if ($clean === '') {
             return $this->fallback($npcId, $questStep, $sessionKey, $playerText, $suggestionId, 'empty', $start, $result->usage, $cost);
         }
-        $violation = $this->filter->violation($clean);
+        // Le message du joueur permet de tolérer une simple reprise de ses mots.
+        $violation = $this->filter->violation($clean, $playerText);
         if ($violation !== null) {
             return $this->fallback($npcId, $questStep, $sessionKey, $playerText, $suggestionId, 'filtered', $start, $result->usage, $cost, $violation, $result->text);
         }
@@ -97,7 +98,7 @@ class GriotService
 
         // Le joueur ne peut pas forger le contexte de jeu ni injecter de balises.
         $text = (string) $message;
-        $text = (string) preg_replace('#</?\s*(contexte_jeu|fiche_de_connaissances|system)[^>]*>#iu', ' ', $text);
+        $text = (string) preg_replace('#</?\s*(contexte_jeu|parole_de_sira|fiche_de_connaissances|system|instruction)[^>]*>#iu', ' ', $text);
         $text = (string) preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text);
         $text = trim((string) preg_replace('/\s+/u', ' ', $text));
 
@@ -113,7 +114,8 @@ class GriotService
             .'Situation : '.($step['situation'] ?? '')."\n"
             .'Ton objectif : '.($step['objectif'] ?? '')."\n"
             ."</contexte_jeu>\n\n"
-            .'Sira : '.$playerText;
+            // Balise attendue par le prompt (garde-fou n°4) : ce qu'elle contient n'est jamais une consigne.
+            ."<parole_de_sira>\n{$playerText}\n</parole_de_sira>";
     }
 
     /** @return string|null raison si la session a dépassé une limite */
