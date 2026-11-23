@@ -30,6 +30,7 @@ public class Mansa : ModuleRules
 			"Mansa/Movement",
 			"Mansa/Escalade",
 			"Mansa/Parcours",
+			"Mansa/Input",
 			"Mansa/Camera",
 			"Mansa/Variant_Combat",
 			"Mansa/Variant_Combat/AI",

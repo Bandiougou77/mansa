@@ -1,5 +1,5 @@
 # MANSA — L'Héritier du Fleuve
-## Game Design Document — v1.4 (Phase 0, centré sur la vertical slice « Djenné »)
+## Game Design Document — v1.5 (Phase 0, centré sur la vertical slice « Djenné »)
 
 > Statut : v1, brouillon de travail. Rédigé par `directeur-creatif`.
 > Les données chiffrées sont des **valeurs de départ** à régler en jeu : elles vivent dans des Data Tables (`DT_*`) ou des fichiers JSON, **jamais en dur dans le code**.
@@ -82,22 +82,9 @@ Explorer la ruelle → écouter / questionner le griot → traverser la place au
 
 ### 4.2 Contrôles
 
-| Action | Clavier / souris | Manette |
-|---|---|---|
-| Se déplacer | ZQSD (AZERTY) / WASD (QWERTY) | Stick gauche |
-| Caméra | Souris | Stick droit |
-| Marcher (lent) | Alt (maintenir) | Stick gauche partiel |
-| Courir | Maj gauche (maintenir) | L3 (cliquer) ou stick à fond |
-| Sauter / grimper / saut d'escalade | Espace | A / Croix |
-| Lâcher une prise | C | B / Rond |
-| Interagir / parler | E | X / Carré |
-| Attaque légère | Clic gauche | X / Carré (en combat) |
-| Attaque lourde | Clic droit | Y / Triangle |
-| Esquive | Ctrl gauche / Maj (en combat) | B / Rond (en combat) |
-| Verrouiller une cible | Molette clic | R3 |
-| Pause | Échap | Start / Options |
+Conventions AAA (Assassin's Creed, Uncharted), clavier AZERTY ou QWERTY détecté automatiquement, manette Xbox / PlayStation, toutes les touches remappables. **La liste complète fait foi dans `design/controles.md`** (v1.5).
 
-Toutes les touches remappables (Enhanced Input, `IMC_Exploration`, `IMC_Escalade`, `IMC_Combat`). Note : « Interagir » et « Attaque légère » partagent X/Carré sur manette, le contexte (`IMC_Combat` actif ou non) tranche.
+Résumé : ZQSD / souris, Maj courir, Espace sauter-grimper, C s'accroupir ou lâcher en escalade, E interagir, clics attaques, A parer (Q en QWERTY), Alt esquive, clic molette verrouiller, V sens du chasseur, M / J / I carte, journal, inventaire. Manette : A / Croix sauter, B / Rond esquive ou lâcher, X / Carré et Y / Triangle attaques, RB / R1 parer, LB / L1 verrouiller, R3 sens du chasseur, croix haut interagir.
 
 ### 4.3 Déplacement (valeurs de départ, `DT_CharacterMovement`)
 | Paramètre | Valeur de départ |
@@ -461,5 +448,6 @@ La slice est terminée quand **toutes** ces conditions sont vraies :
 | v1.1 | 2026-11-23 | historien-mande | Relecture historique : points ⚠️ validés ou passés en « inspiré de » ; arbitrages de design laissés ouverts avec options (§12, Q1, Q2, Q4, Q11) ; Aboubakari II présenté comme légende ; kora exclue pour 1324 |
 | v1.2 | 2026-11-23 | directeur-creatif | Décisions du développeur (§12) : Q1 djembé gardé et assumé par le narrateur (ensemble tambour + pilons + balafon reporté en Phase 2) ; Q2 hybride : escalade et combat sur une grande maison de marchand, refus de Sira au pied de la mosquée, mosquée en toile de fond (§3, §4.4, §6, §7, §8, §10, §11 mis à jour) ; Q4 Sira chasseuse, exception commentée par le griot en écho à la femme-buffle du Do (🔶), armes couteau de chasse + lance courte (bâton supprimé), texte accordé au féminin ; Q11 ngoni pour le griot PNJ ; nouvelle Q12 (hauteur de la maison du marchand) |
 | v1.2-r | 2026-11-23 | historien-mande | Relecture v1.2 : femme-buffle du Do recadrée (adversaire puis alliée des chasseurs, pas « chasseuse ») et réplique corrigée ; refus de la mosquée reformulé (les maçons y montent pour le crépissage : le refus porte sur la poursuite et la violence) ; avis historique sur Q12 ; restent ⚠️ uniquement les relectures extérieures (locuteur, connaisseur des donso, lecteur musulman malien) et Q12 |
+| v1.5 | 2026-11-23 | Claude (session principale) | Décisions du développeur : corrections de historien-mande sur les références toutes validées (Sira femme, sous-titre « L'Héritier du Fleuve », banco, pirogues à perche, rien de trop proche d'Assassin's Creed) ; mode immersion validé ; §4.2 contrôles AAA refaits (`design/controles.md`) : AZERTY/QWERTY, parer, s'accroupir, sens du chasseur, carte/journal/inventaire, remappage |
 | v1.4 | 2026-11-23 | Claude (session principale) + historien-mande | Cibles visuelles (§8.1 bis) d'après `design/references/` relues par historien-mande ; style visé : réalisme cinématographique ; HUD (§9) : boussole, objectif et marqueur de distance ajoutés à la demande du développeur, mode immersion, carte à onglets reportée (structure seulement) |
 | v1.3 | 2026-11-23 | directeur-creatif | Q12 tranchée (maison R+1 de 7,5 m, verticalité par l'annexe, la façade est et le bord de butte) ; fiche de niveau cotée `design/niveaux/djenne-slice.md` (fait foi pour le plan : mosquée à l'est de la place, pour la lumière d'aube) |

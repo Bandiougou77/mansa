@@ -212,6 +212,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Mansa|Escalade")
 	bool TenterAccroche();
 
+	/** Au sol : prise saisissable devant Sira (sans s'y accrocher). Sert aussi au prompt « Grimper ». */
+	UFUNCTION(BlueprintCallable, Category="Mansa|Escalade")
+	UMansaPriseComponent* TrouverPriseDepuisSol(FVector& OutPoint) const;
+
 	/** En l'air, pendant la fenêtre de rattrapage : saute vers la prise à portée dans la direction (repère du mur quitté). */
 	UFUNCTION(BlueprintCallable, Category="Mansa|Escalade")
 	bool TenterRattrapageEnLair(FVector2D Direction);

@@ -4,6 +4,7 @@ MANSA — Tâche A5 : importe (ou réimporte) les Data Tables du socle depuis le
   design/data/DT_CharacterMovement.csv -> /Game/Mansa/Data/DT_CharacterMovement (FMansaMovementRow)
   design/data/DT_CameraProfiles.csv    -> /Game/Mansa/Data/DT_CameraProfiles    (FMansaCameraProfileRow)
   design/data/DT_PrisesEscalade.csv    -> /Game/Mansa/Data/DT_PrisesEscalade    (FMansaPriseRow, D3)
+  design/data/DT_LibellesTouches.csv   -> /Game/Mansa/Data/DT_LibellesTouches   (FMansaLibelleToucheRow, A6)
 
 Pourquoi /design/data ? Les CSV sont des données de DESIGN (lisibles, comparables dans Git,
 modifiables sans Unreal). Les .uasset générés dans Content/ sont aussi commités pour que le jeu
@@ -32,6 +33,7 @@ TABLES = [
     ("DT_CharacterMovement", "/Script/Mansa.MansaMovementRow"),
     ("DT_CameraProfiles", "/Script/Mansa.MansaCameraProfileRow"),
     ("DT_PrisesEscalade", "/Script/Mansa.MansaPriseRow"),
+    ("DT_LibellesTouches", "/Script/Mansa.MansaLibelleToucheRow"),
 ]
 
 

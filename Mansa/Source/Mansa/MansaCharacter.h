@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "MansaDataTypes.h"
 #include "MansaClimbingComponent.h"
+#include "MansaInputTypes.h"
 #include "MansaCharacter.generated.h"
 
 class USpringArmComponent;
@@ -111,6 +112,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Contextes")
 	TObjectPtr<UInputMappingContext> EscaladeContext;
 
+	/** Touches qui dépendent de la disposition (ZQSD + A = parer) : actif si clavier AZERTY. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Contextes")
+	TObjectPtr<UInputMappingContext> ClavierAzertyContext;
+
+	/** Touches qui dépendent de la disposition (WASD + Q = parer) : actif si clavier QWERTY. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Contextes")
+	TObjectPtr<UInputMappingContext> ClavierQwertyContext;
+
 	/** Contexte ajouté pendant un combat (attaques, esquive, verrouillage). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Contextes")
 	TObjectPtr<UInputMappingContext> CombatContext;
@@ -187,6 +196,30 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
 	TObjectPtr<UInputAction> PauseAction;
 
+	/** S'accroupir (C, bascule) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> CrouchAction;
+
+	/** Parer / bloquer (A en AZERTY, Q en QWERTY, RB/R1) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> ParryAction;
+
+	/** Sens du chasseur (V, R3) : révèle prises, traces, ennemis */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> HunterSenseAction;
+
+	/** Carte (M, Vue/pavé tactile) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> MapAction;
+
+	/** Journal (J) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> JournalAction;
+
+	/** Inventaire (I) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Input|Actions")
+	TObjectPtr<UInputAction> InventoryAction;
+
 	/** Affiche un message à l'écran pour chaque action (aide au test A4). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mansa|Debug")
 	bool bAfficherDebugInput = true;
@@ -259,6 +292,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
 	void SetCombatContextActive(bool bActive);
 
+	/** Active le contexte clavier AZERTY ou QWERTY selon les réglages du joueur (Auto = détection). */
+	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
+	void AppliquerDispositionClavier();
+
+	/** Prompts utiles maintenant (« Grimper », « Lâcher »...), lus par le HUD. */
+	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
+	void GetPromptsContextuels(TArray<FMansaPrompt>& OutPrompts) const;
+
+	/** Prompts actuels en texte (« [Espace] Grimper »), pour les logs et les tests. */
+	FString DecrirePrompts(EMansaPeripherique Peripherique) const;
+
+	/** Toutes les actions assignées (debug, futur menu de remappage). */
+	TArray<const UInputAction*> GetToutesLesActions() const;
+
+	/** Sens du chasseur actif (V / R3). */
+	UFUNCTION(BlueprintPure, Category="Mansa|Input")
+	bool EstSensDuChasseurActif() const { return bSensDuChasseur; }
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -326,6 +377,17 @@ protected:
 	void OnLockOn(const FInputActionValue& Value);
 	void OnDropHold(const FInputActionValue& Value);
 	void OnPause(const FInputActionValue& Value);
+	void OnCrouchToggle(const FInputActionValue& Value);
+	void OnParry(const FInputActionValue& Value);
+	void OnHunterSense(const FInputActionValue& Value);
+	void OnMap(const FInputActionValue& Value);
+	void OnJournal(const FInputActionValue& Value);
+	void OnInventory(const FInputActionValue& Value);
+
+	/** Déclare les contextes de Sira aux réglages Enhanced Input du joueur (remappage, bloc H). */
+	void EnregistrerContextesRemappables();
+
+	bool bSensDuChasseur = false;
 
 	/** Escalade : bascule du contexte d'entrée et du profil caméra. */
 	UFUNCTION()

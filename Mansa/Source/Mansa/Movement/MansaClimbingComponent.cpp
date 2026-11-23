@@ -382,7 +382,18 @@ bool UMansaClimbingComponent::TenterAccroche()
 	{
 		return false;
 	}
+	FVector MeilleurPoint;
+	UMansaPriseComponent* Meilleure = TrouverPriseDepuisSol(MeilleurPoint);
+	return Meilleure && DemarrerAccroche(Meilleure, MeilleurPoint, DureeAccroche, 0.f);
+}
 
+UMansaPriseComponent* UMansaClimbingComponent::TrouverPriseDepuisSol(FVector& OutPoint) const
+{
+	const ACharacter* Perso = GetPersonnage();
+	if (!bActif || !Perso || Etat != EMansaEtatEscalade::Aucun || !Perso->GetCharacterMovement()->IsMovingOnGround())
+	{
+		return nullptr;
+	}
 	// Saisie depuis le sol : prise devant Sira, à hauteur de saut, côté extérieur du mur.
 	const FVector Centre = Perso->GetActorLocation();
 	const float Pieds = Centre.Z - Perso->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
@@ -420,7 +431,8 @@ bool UMansaClimbingComponent::TenterAccroche()
 			MeilleurPoint = Q;
 		}
 	}
-	return Meilleure && DemarrerAccroche(Meilleure, MeilleurPoint, DureeAccroche, 0.f);
+	OutPoint = MeilleurPoint;
+	return Meilleure;
 }
 
 bool UMansaClimbingComponent::TenterRattrapageEnLair(FVector2D Direction)
