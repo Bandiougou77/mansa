@@ -25,6 +25,9 @@ public class Mansa : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"Mansa",
+			"Mansa/Data",
+			"Mansa/Movement",
+			"Mansa/Camera",
 			"Mansa/Variant_Combat",
 			"Mansa/Variant_Combat/AI",
 			"Mansa/Variant_Combat/Animation",
