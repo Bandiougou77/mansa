@@ -56,15 +56,17 @@
 
 ## Bloc V — Beauty shot « Djenné » : la référence visuelle (≈ 14 h, à faire juste après D)
 
-> Une **seule vue**, finie au maximum, qui sert d'étalon visuel pour tout le jeu (procédure : skill `direction-artistique-aaa` §5). Proposition de vue : depuis la terrasse du marchand, la ruelle qui débouche sur la grande mosquée au coucher, le Niger au loin.
+> Une **seule vue**, finie au maximum, qui sert d'étalon visuel pour tout le jeu (procédure : skill `direction-artistique-aaa` §5). Proposition de vue : depuis la terrasse du marchand, la ruelle qui débouche sur la grande mosquée dans la lumière rasante de l'**aube** (la mosquée est à l'est), le bras du Bani au loin.
+>
+> **Cibles visuelles** : `design/references/ref-01-*.png` et `ref-02-*.png` (analyse et relecture historique dans `design/references/README.md`). On vise **leur niveau** de lumière, de poussière, de densité de foule et de composition (promontoire, premier plan qui cadre, leading lines vers le monument) ; on **ne reprend pas** leur contenu : Sira (femme, donso) au lieu du héros masculin, banco à toits plats et pinacles arrondis au lieu des flèches de château, pirogues au lieu des voiliers, plaine inondable au lieu des montagnes, rien qui rappelle la marque Assassin's Creed.
 
 | ID | Tâche | Durée | Agent | Comment tester |
 |---|---|---|---|---|
-| V1 | Choix du point de vue + composition en greybox (silhouettes, leading lines, monument au loin), planche relue par `hist` | 2 h | `dc` + `art` + `hist` | Capture greybox validée ; `CAM_BeautyShot` posée dans `LV_Djenne_Greybox` |
+| V1 | Choix du point de vue + composition en greybox (silhouettes, leading lines, monument au loin) en reprenant le cadrage « promontoire » des références, planche relue par `hist` | 2 h | `dc` + `art` + `hist` | Capture greybox validée côte à côte avec la vignette de référence ; `CAM_BeautyShot` posée dans `LV_Djenne_Greybox` |
 | V2 | Éclairage « Coucher épique » : Sky Atmosphere, soleil (light shafts), Sky Light temps réel, Volumetric Cloud, Exponential Height Fog + Volumetric Fog, Lumen ; preset réutilisable | 3 h | `art` | Capture avant/après ; rayons et poussière visibles |
 | V3 | Master materials `M_Banco_Master` (usure, humidité, crépi frais/ancien, traces de mains), `M_Tissu_Master`, `M_Bois_Master` + sols Megascans/Fab recolorés, dans le champ uniquement | 3 h | `art` | Aucune texture répétitive visible dans le cadre |
 | V4 | Densité et vie : PCG pour props au pied des murs et végétation, tissus indigo/bogolan, poteries, nattes, decals ; poussière, fumée, oiseaux (Niagara simple) | 4 h | `art` | ≥ 3 sources de vie dans le cadre |
-| V5 | Post-process et grading, `HighResShot 2` dans `design/references/beauty-shots/`, grille de revue (skill §6) notée, liste chiffrée des assets manquants | 2 h | `art` + `qa` | Capture commitée + note /5 par critère + 60 FPS en 1440p mesurés |
+| V5 | Post-process et grading, `HighResShot 2` dans `design/references/beauty-shots/`, grille de revue (skill §6) notée **en comparaison avec les références**, liste chiffrée des assets manquants | 2 h | `art` + `qa` | Capture commitée à côté des références + note /5 par critère (cible : ≥ 4 en lumière, échelle, composition) + 60 FPS en 1440p mesurés |
 
 ---
 

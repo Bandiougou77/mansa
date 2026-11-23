@@ -1,5 +1,5 @@
 # MANSA — L'Héritier du Fleuve
-## Game Design Document — v1.2 (Phase 0, centré sur la vertical slice « Djenné »)
+## Game Design Document — v1.4 (Phase 0, centré sur la vertical slice « Djenné »)
 
 > Statut : v1, brouillon de travail. Rédigé par `directeur-creatif`.
 > Les données chiffrées sont des **valeurs de départ** à régler en jeu : elles vivent dans des Data Tables (`DT_*`) ou des fichiers JSON, **jamais en dur dans le code**.
@@ -337,7 +337,13 @@ Règle : le chemin à suivre doit se lire **par la lumière** (soleil rasant de 
 - **Bâtiments clés** : la **maison du marchand** (escaladable, détail élevé, lisible de près) et la **mosquée** (décor non escaladable, vue de loin depuis la place et la terrasse : silhouette forte, détail moyen, 🔶 silhouette « médiévale imaginée », cf. §7.1).
 - **Lumière** : aube, Lumen, soleil bas pour dessiner les reliefs de la façade du marchand et découper la silhouette de la mosquée.
 - **Personnages** : Sira (chasseuse donso, armée d'un couteau de chasse et d'une lance courte), griot (avec son ngoni), voleur, brute, 5-8 passants (variantes de couleurs d'un même modèle). Base possible : MetaHuman, avec tenues refaites dans Blender. 🔶 inspiré de (assumé) : le cadre des costumes est fixé dans `djenne-1324.md`, §8 et §10 ; chaque planche de costume est à faire relire par historien-mande avant modélisation.
-- Style : réaliste stylisé, pas photoréaliste (plus atteignable pour un développeur seul).
+- Style : **réalisme cinématographique** visé (cf. §8.1 bis, niveau Assassin's Creed / Uncharted, skill `direction-artistique-aaa`). Si un élément ne peut pas atteindre ce niveau (personnages, animations), on garde un rendu « réaliste stylisé » cohérent plutôt qu'un photoréalisme raté.
+
+### 8.1 bis Cibles visuelles (références du développeur)
+Planches : `design/references/ref-01-empire-dore-du-mande.png` et `ref-02-epopee-du-mande.png`. Analyse complète et relecture historique : `design/references/README.md`. Elles fixent un **niveau**, pas un contenu.
+- **À atteindre** : lumière dorée rasante avec poussière et rayons, ville et mosquée vues d'un promontoire, **foule dense et vivante** au marché, premier plan qui cadre, leading lines vers le monument, HUD lisible.
+- **À ne pas reprendre** (historien-mande) : héros masculin (c'est **Sira**), sous-titre « L'Empire du Mandé » (c'est **L'Héritier du Fleuve**), flèches pointues et silhouette de château (Djenné = banco, toits plats, pinacles arrondis, petite ville), mosquée façon 1907, voiliers (→ pirogues à perche), montagnes et dunes (→ plaine inondable du Bani), capes d'or, auvents de bazar, tout-or monotone (→ varier aube / harmattan / midi).
+- **Marque Assassin's Creed** : ❌ pas de logo en chevron, de bannières triangulaires, de capuche ou d'armure d'assassin. Le HUD reprend les **fonctions**, avec une identité visuelle propre (bandes tissées, signes inspirés des donso).
 
 ### 8.2 Audio (FMOD)
 - **Ambiance** : marché qui s'éveille, appel à la prière au loin à l'aube ✅ validé : islam établi à Djenné (mosquée fondée selon la tradition au XIIIe s.) ; voix seule, sans amplification, en arabe. Ajouter les récitations des écoles coraniques et les pilons (cf. `djenne-1324.md`, §4 et §9), oiseaux, fleuve.
@@ -350,6 +356,9 @@ Règle : le chemin à suivre doit se lire **par la lumière** (soleil rasant de 
 ## 9. UI / HUD minimal
 | Élément | Quand | Description |
 |---|---|---|
+| Boussole | Exploration | Barre en haut de l'écran, points cardinaux + marqueur d'objectif ; motif de bande tissée (pas de copie du style AC) |
+| Objectif | Exploration, escalade | En haut à gauche : titre de l'étape + sous-objectif (« Parler au griot ») ; se replie après quelques secondes |
+| Marqueur de distance | Exploration | Losange sur l'objectif avec distance (« 45 m »), masqué en combat ; désactivable (Options) |
 | Prompts contextuels | Exploration, escalade | Icône de touche + verbe (« Grimper »), apparaît à 2 m |
 | Barre de vie de Sira | Combat seulement | Fine, en bas à gauche, se masque 3 s après le combat |
 | Anneau de pulsation | Combat seulement | Sous les pieds de Sira, pulse sur chaque temps ; désactivable |
@@ -358,7 +367,8 @@ Règle : le chemin à suivre doit se lire **par la lumière** (soleil rasant de 
 | Fenêtre de dialogue griot | Conversation | 3 questions suggérées + champ texte + indicateur « le griot réfléchit » |
 | Menu pause | — | Reprendre, Options (sensibilité, aide au rythme, compensation latence, sous-titres, liseré des prises), Quitter |
 
-Pas de mini-carte, pas de boussole, pas de marqueur d'objectif permanent : le griot et la lumière guident.
+Décision du développeur (v1.4, d'après les planches de référence) : **boussole, objectif et marqueur de distance** entrent dans le HUD de la slice. Le griot et la lumière restent le guidage principal ; un **mode « immersion »** (Options) masque boussole et marqueurs.
+Pas de mini-carte. La **carte plein écran à onglets** (Carte, Quêtes, Inventaire, Compétences, Faction, Codex) est hors slice : on prévoit seulement sa structure (widget à onglets vide) en bloc H ; son contenu arrive en Phase 2-3, carte corrigée selon `design/references/README.md`.
 
 ---
 
@@ -451,4 +461,5 @@ La slice est terminée quand **toutes** ces conditions sont vraies :
 | v1.1 | 2026-11-23 | historien-mande | Relecture historique : points ⚠️ validés ou passés en « inspiré de » ; arbitrages de design laissés ouverts avec options (§12, Q1, Q2, Q4, Q11) ; Aboubakari II présenté comme légende ; kora exclue pour 1324 |
 | v1.2 | 2026-11-23 | directeur-creatif | Décisions du développeur (§12) : Q1 djembé gardé et assumé par le narrateur (ensemble tambour + pilons + balafon reporté en Phase 2) ; Q2 hybride : escalade et combat sur une grande maison de marchand, refus de Sira au pied de la mosquée, mosquée en toile de fond (§3, §4.4, §6, §7, §8, §10, §11 mis à jour) ; Q4 Sira chasseuse, exception commentée par le griot en écho à la femme-buffle du Do (🔶), armes couteau de chasse + lance courte (bâton supprimé), texte accordé au féminin ; Q11 ngoni pour le griot PNJ ; nouvelle Q12 (hauteur de la maison du marchand) |
 | v1.2-r | 2026-11-23 | historien-mande | Relecture v1.2 : femme-buffle du Do recadrée (adversaire puis alliée des chasseurs, pas « chasseuse ») et réplique corrigée ; refus de la mosquée reformulé (les maçons y montent pour le crépissage : le refus porte sur la poursuite et la violence) ; avis historique sur Q12 ; restent ⚠️ uniquement les relectures extérieures (locuteur, connaisseur des donso, lecteur musulman malien) et Q12 |
+| v1.4 | 2026-11-23 | Claude (session principale) + historien-mande | Cibles visuelles (§8.1 bis) d'après `design/references/` relues par historien-mande ; style visé : réalisme cinématographique ; HUD (§9) : boussole, objectif et marqueur de distance ajoutés à la demande du développeur, mode immersion, carte à onglets reportée (structure seulement) |
 | v1.3 | 2026-11-23 | directeur-creatif | Q12 tranchée (maison R+1 de 7,5 m, verticalité par l'annexe, la façade est et le bord de butte) ; fiche de niveau cotée `design/niveaux/djenne-slice.md` (fait foi pour le plan : mosquée à l'est de la place, pour la lumière d'aube) |
