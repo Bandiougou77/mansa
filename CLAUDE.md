@@ -18,6 +18,19 @@ Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assas
 4. **Monde saisonnier** : crue et décrue du Niger, crépissage annuel de Djenné qui change l'escalade.
 5. **Mémoire orale** : les devises (*fasa*) et les chants servent de clés (dialogues, portes, alliances).
 
+## Direction artistique
+
+**Exigence : des graphismes magnifiques, au niveau d'Assassin's Creed et d'Uncharted.** L'Empire du Mali était l'un des plus riches du monde : ça doit se voir à l'écran.
+
+- **Grandes structures impressionnantes** : mosquées, palais, remparts, maisons en banco à étages.
+- **Paysages à couper le souffle** : fleuve Niger, falaises, savane, désert, villes vues de loin.
+- **Lumière cinématographique** : soleil couchant, poussière dans l'air, rayons de lumière.
+- **Détails riches partout** : or, tissus colorés (indigo, bogolan), marchés vivants.
+- **Unreal 5.8 à fond** : Lumen, Nanite, Megascans/Fab, PCG (végétation, quartiers), Volumetric Fog, Sky Atmosphere, post-process cinématographique.
+- **Beauty shot** : chaque zone commence par une vue unique finie au maximum, qui sert de référence visuelle (Djenné : tâche V du plan de la Phase 1).
+- **Règles détaillées** : skill `.claude/skills/direction-artistique-aaa/SKILL.md`, à appliquer pour **toute tâche visuelle** (éclairage, matériaux, paysages, architecture, PCG, caméra, revues visuelles). Tous les agents le suivent.
+- **Honnêteté** : quand une tâche demande des assets achetés ou un artiste 3D, le dire et proposer (a) un placeholder gratuit, (b) un asset payant avec son prix, (c) un brief d'artiste.
+
 ## Stack technique
 
 | Domaine | Outil |

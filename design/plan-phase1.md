@@ -3,7 +3,7 @@
 > Source : `design/GDD.md` v1.2. Chaque tâche dure **1 à 3 h**, se termine par un **test** et un commit sur une branche `feature/<id>` fusionnée dans `develop`.
 > Ordre conseillé : les blocs se suivent, mais **B (backend griot)** peut avancer en parallèle de **C-E** les jours où tu n'as pas envie d'ouvrir Unreal.
 > Légende agents : `dev` = dev-gameplay-unreal, `ia` = ingenieur-ia-pnj, `art` = tech-art-blender, `son` = sound-designer, `dc` = directeur-creatif, `hist` = historien-mande, `qa` = qa-relecteur.
-> Total estimé : **~110-130 h** (≈ 3 mois à 10 h/semaine).
+> Total estimé : **~125-145 h** (≈ 3 mois et demi à 10 h/semaine), dont le bloc V (beauty shot) placé **juste après D** pour fixer tôt le niveau visuel.
 
 ---
 
@@ -53,6 +53,20 @@
 | D6 | Prise `BancoFragile` (1,5 s), volumes de rattrapage + checkpoint (fondu 0,5 s), caméra escalade | 2-3 h | `dev` | Rester sur la prise fragile la fait tomber → retour au checkpoint sans mort |
 | D7 | Placement de toutes les prises D1-D3 + mosquée sans aucune prise | 1-2 h | `dev` | Escalade complète D1→terrasse ; aucun prompt « Grimper » sur la mosquée |
 | D8 | Relecture escalade (bugs de collision, cas limites) | 1 h | `qa` | 10 montées sans blocage dans la géométrie |
+
+## Bloc V — Beauty shot « Djenné » : la référence visuelle (≈ 14 h, à faire juste après D)
+
+> Une **seule vue**, finie au maximum, qui sert d'étalon visuel pour tout le jeu (procédure : skill `direction-artistique-aaa` §5). Proposition de vue : depuis la terrasse du marchand, la ruelle qui débouche sur la grande mosquée au coucher, le Niger au loin.
+
+| ID | Tâche | Durée | Agent | Comment tester |
+|---|---|---|---|---|
+| V1 | Choix du point de vue + composition en greybox (silhouettes, leading lines, monument au loin), planche relue par `hist` | 2 h | `dc` + `art` + `hist` | Capture greybox validée ; `CAM_BeautyShot` posée dans `LV_Djenne_Greybox` |
+| V2 | Éclairage « Coucher épique » : Sky Atmosphere, soleil (light shafts), Sky Light temps réel, Volumetric Cloud, Exponential Height Fog + Volumetric Fog, Lumen ; preset réutilisable | 3 h | `art` | Capture avant/après ; rayons et poussière visibles |
+| V3 | Master materials `M_Banco_Master` (usure, humidité, crépi frais/ancien, traces de mains), `M_Tissu_Master`, `M_Bois_Master` + sols Megascans/Fab recolorés, dans le champ uniquement | 3 h | `art` | Aucune texture répétitive visible dans le cadre |
+| V4 | Densité et vie : PCG pour props au pied des murs et végétation, tissus indigo/bogolan, poteries, nattes, decals ; poussière, fumée, oiseaux (Niagara simple) | 4 h | `art` | ≥ 3 sources de vie dans le cadre |
+| V5 | Post-process et grading, `HighResShot 2` dans `design/references/beauty-shots/`, grille de revue (skill §6) notée, liste chiffrée des assets manquants | 2 h | `art` + `qa` | Capture commitée + note /5 par critère + 60 FPS en 1440p mesurés |
+
+---
 
 ## Bloc E — Rythme et combat (≈ 26 h)
 
@@ -109,6 +123,7 @@
 
 1. **Fin A + C** : on se promène dans un Djenné en cubes. → commit taggé `slice-greybox`
 2. **Fin D** : on grimpe la maison du marchand. → `slice-escalade`
+2 bis. **Fin V** : le beauty shot de Djenné existe et sert de référence visuelle. → `slice-beauty-shot`
 3. **Fin E** : le combat au djembé est jouable en greybox. → `slice-combat`
 4. **Fin B + F** : le griot parle dans le jeu. → `slice-griot`
 5. **Fin G + H** : la slice est présentable. → `v0.1-slice` fusionné dans `main`
