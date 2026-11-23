@@ -25,19 +25,12 @@ public class Mansa : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"Mansa",
-			"Mansa/Variant_Platforming",
-			"Mansa/Variant_Platforming/Animation",
 			"Mansa/Variant_Combat",
 			"Mansa/Variant_Combat/AI",
 			"Mansa/Variant_Combat/Animation",
 			"Mansa/Variant_Combat/Gameplay",
 			"Mansa/Variant_Combat/Interfaces",
 			"Mansa/Variant_Combat/UI",
-			"Mansa/Variant_SideScrolling",
-			"Mansa/Variant_SideScrolling/AI",
-			"Mansa/Variant_SideScrolling/Gameplay",
-			"Mansa/Variant_SideScrolling/Interfaces",
-			"Mansa/Variant_SideScrolling/UI"
 		});
 
 		// Uncomment if you are using Slate UI
