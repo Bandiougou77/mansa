@@ -48,7 +48,7 @@ Jeu d'action-aventure à la troisième personne, inspiré d'Uncharted et d'Assas
 
 - **C++ Unreal** : préfixes standard (`A` acteurs, `U` objets/composants, `F` structs, `E` enums). Classes du jeu préfixées `Mansa` (ex. `AMansaCharacter`, `UMansaNyamaComponent`).
 - **Exposer au Blueprint** tout ce que le développeur voudra régler sans recompiler (`UPROPERTY(EditAnywhere, BlueprintReadWrite)`).
-- **Assets** : `SM_` static mesh, `SK_` skeletal mesh, `M_` material, `MI_` material instance, `T_` texture, `BP_` blueprint, `ABP_` anim blueprint, `DT_` data table.
+- **Assets** : `SM_` static mesh, `SK_` skeletal mesh, `M_` material, `MI_` material instance, `T_` texture, `BP_` blueprint, `ABP_` anim blueprint, `DT_` data table, `LV_` level (map) — les maps du template (`Lvl_`) ne sont pas renommées.
 - **Données de design** (dialogues, devises, stats) dans des Data Tables ou des fichiers JSON/CSV, jamais en dur dans le code.
 - **Commits** : messages en français, format `type(zone): description` (ex. `feat(combat): ajoute la fenêtre de rythme`).
 
