@@ -114,7 +114,10 @@ def verifier_a5(cdo):
         if verifier(cam is not None, "D1 composant CameraProfiles présent"):
             dt_cam = cam.get_editor_property("profile_table")
             verifier(dt_cam is not None and dt_cam.get_name() == "DT_CameraProfiles", "D1 CameraProfiles.profile_table assignée")
-        trav = cdo.get_editor_property("traversal")
+        try:
+            trav = cdo.get_editor_property("traversal")
+        except Exception:
+            trav = None
         verifier(trav is not None, "D2 composant Traversal présent")
 
 
