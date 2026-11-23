@@ -15,6 +15,7 @@ class UInputMappingContext;
 class UEnhancedInputComponent;
 class UDataTable;
 class UMansaCameraProfileComponent;
+class UMansaTraversalComponent;
 struct FInputActionValue;
 enum class ETriggerEvent : uint8;
 
@@ -56,6 +57,10 @@ class AMansaCharacter : public ACharacter
 	/** Profils de caméra (DT_CameraProfiles) et transitions. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMansaCameraProfileComponent> CameraProfiles;
+
+	/** Enjambement et mantle (D2). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMansaTraversalComponent> Traversal;
 
 protected:
 
@@ -207,6 +212,13 @@ public:
 	UFUNCTION(Exec)
 	void MansaContexte(FName NomContexte, bool bActif);
 
+	/**
+	 * Commande console de test D2 : « MansaTestFranchissement ». Place Sira devant chaque acteur
+	 * tagué MansaObstacleTest (1,5 s d'intervalle), tente le franchissement et logue le résultat.
+	 */
+	UFUNCTION(Exec)
+	void MansaTestFranchissement();
+
 	/** Active / désactive le contexte d'escalade (appelé par le futur composant d'escalade). */
 	UFUNCTION(BlueprintCallable, Category="Mansa|Input")
 	void SetEscaladeContextActive(bool bActive);
@@ -227,6 +239,12 @@ protected:
 	bool bSprintBascule = false;
 	bool bMarcheMaintenue = false;
 	float MagnitudeStick = 0.f;
+
+	// Test automatique des franchissements (commande console)
+	void EtapeTestFranchissement();
+	TArray<TWeakObjectPtr<AActor>> ObstaclesDeTest;
+	int32 IndexTestFranchissement = 0;
+	FTimerHandle TimerTestFranchissement;
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -294,4 +312,7 @@ public:
 
 	/** Returns CameraProfiles subobject **/
 	FORCEINLINE UMansaCameraProfileComponent* GetCameraProfiles() const { return CameraProfiles; }
+
+	/** Returns Traversal subobject **/
+	FORCEINLINE UMansaTraversalComponent* GetTraversal() const { return Traversal; }
 };
