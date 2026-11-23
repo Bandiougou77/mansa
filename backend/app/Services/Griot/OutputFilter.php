@@ -11,6 +11,11 @@ use Normalizer;
  *  - tronque à N mots (60 par défaut) en coupant si possible à la fin d'une phrase.
  *
  * Les motifs s'appliquent sur un texte en minuscules et sans accents.
+ *
+ * Reprise d'un mot du joueur : si le griot reprend un mot que Sira vient d'employer
+ * (« Pirate ? Voilà un mot qui vient de bien loin »), ce n'est pas un dérapage et la réponse
+ * passe. Seul ce qui ne doit JAMAIS sortir (ABSOLUTE : vraie clé, fuite du prompt) bloque
+ * dans tous les cas. Le prompt v2 demande en plus au griot de ne pas répéter ces mots.
  */
 class OutputFilter
 {
@@ -31,6 +36,12 @@ class OutputFilter
         'date postérieure' => '/\b(1[4-9]\d\d|2\d\d\d)\b|\bxixe\b|\bxxe\b|\bxxie\b/u',
         'plantes américaines / thé' => '/manioc|arachide|\btabac|\bpiment|the\s+a\s+la\s+menthe/u',
         'clichés' => '/\btribus?\b|\bsorcier|\bfetiche|tam-tam|tamtam|\bsavane|\bjungle/u',
+    ];
+
+    /** @var array<string, string> bloqués même s'ils figurent dans le message du joueur */
+    public const ABSOLUTE = [
+        'clé secrète' => '/sk-ant-[a-z0-9_-]{6,}/u',
+        'fuite du prompt' => '/contexte_jeu|parole_de_sira|fiche_de_connaissances|legende_fiabilite|etapes_quete|questions_suggerees|repliques_de_refus|\{\{|\}\}/u',
     ];
 
     private const ENGLISH_MARKERS = '/\b(the|and|you|your|i\'m|i am|is|are|what|with|this)\b/u';
@@ -54,14 +65,29 @@ class OutputFilter
         return $text;
     }
 
-    /** Renvoie le libellé de la première règle violée, ou null si la réponse est acceptable. */
-    public function violation(string $text): ?string
+    /**
+     * Renvoie le libellé de la première règle violée, ou null si la réponse est acceptable.
+     * $playerMessage : ce que Sira vient de dire ; un mot interdit qui y figure déjà est une reprise tolérée.
+     */
+    public function violation(string $text, ?string $playerMessage = null): ?string
     {
         $normalized = $this->normalize($text);
+        $player = $playerMessage !== null ? $this->normalize($playerMessage) : '';
 
-        foreach (self::FORBIDDEN as $label => $pattern) {
+        foreach (self::ABSOLUTE as $label => $pattern) {
             if (preg_match($pattern, $normalized)) {
                 return $label;
+            }
+        }
+
+        foreach (self::FORBIDDEN as $label => $pattern) {
+            if (! preg_match_all($pattern, $normalized, $matches)) {
+                continue;
+            }
+            foreach ($matches[0] as $match) {
+                if (! $this->isEcho((string) $match, $player)) {
+                    return $label;
+                }
             }
         }
 
@@ -70,6 +96,14 @@ class OutputFilter
         }
 
         return null;
+    }
+
+    /** Vrai si le mot trouvé dans la réponse figure déjà dans le message du joueur (reprise). */
+    public function isEcho(string $match, string $normalizedPlayer): bool
+    {
+        $match = trim($match);
+
+        return $match !== '' && $normalizedPlayer !== '' && str_contains($normalizedPlayer, $match);
     }
 
     public function truncate(string $text): string
