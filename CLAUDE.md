@@ -88,7 +88,8 @@ _(À mettre à jour à la fin de chaque session : ce qui est fait, ce qui reste,
 
 _Dernière mise à jour : 2026-11-23 (session 1)._
 
-- **Phase** : 0 terminée → prochaine étape : Phase 1, tâche **A1** de `design/plan-phase1.md`.
+- **Phase** : 1 en cours. **A1 et A3 faites** (map `LV_Djenne_Test`, `BP_Sira`, `BP_MansaGameMode`, scripts dans `tools/unreal/`). A3 reste à tester en Play à la manette. Prochaines : **A2** (attend l'accord pour supprimer les variantes Platforming/SideScrolling), puis **A4/A5** (C++ : éditeur fermé pour compiler).
+- **Astuce** : les scripts `tools/unreal/*.py` peuvent tourner sans surveillance (`MANSA_AUTOQUIT=1` + `UnrealEditor.exe … -ExecutePythonScript=… -unattended`).
 - **Fait** :
   - Environnement : Git 2.52, Git LFS 3.7.1, PHP 8.2, Composer 2.9, UE 5.8.4, VS 2026 (« Développement de jeux en C++ »).
   - Dépôt Git (Gitflow : `main` + `develop`), remote GitHub privé `origin` (https://github.com/Bandiougou77/mansa), `.gitignore` Unreal/Laravel, `.gitattributes` LFS, structure de dossiers.
