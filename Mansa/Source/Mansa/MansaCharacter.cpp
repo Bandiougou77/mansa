@@ -14,6 +14,9 @@
 #include "Engine/Engine.h"
 #include "Mansa.h"
 #include "MansaCameraProfileComponent.h"
+#include "MansaTraversalComponent.h"
+#include "EngineUtils.h"
+#include "TimerManager.h"
 #include "Engine/DataTable.h"
 
 AMansaCharacter::AMansaCharacter()
@@ -49,6 +52,9 @@ AMansaCharacter::AMansaCharacter()
 	// Profils de caméra (bras, FOV, décalage) pilotés par DT_CameraProfiles
 	CameraProfiles = CreateDefaultSubobject<UMansaCameraProfileComponent>(TEXT("CameraProfiles"));
 	CameraProfiles->SetCibles(CameraBoom, FollowCamera);
+
+	// Enjambement / mantle, déclenchés par Saut (et automatiquement en course pour les murets)
+	Traversal = CreateDefaultSubobject<UMansaTraversalComponent>(TEXT("Traversal"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -87,6 +93,11 @@ void AMansaCharacter::ChargerReglagesMouvement()
 	CMC->JumpZVelocity = FMath::Sqrt(2.f * Gravite * FMath::Max(0.f, MouvementCourant.HauteurSaut));
 
 	MettreAJourAllure();
+
+	if (Traversal)
+	{
+		Traversal->AppliquerReglages(MouvementCourant);
+	}
 
 	UE_LOG(LogMansa, Log, TEXT("%s : déplacement chargé (marche %.0f, jogging %.0f, course %.0f, saut %.0f cm -> JumpZ %.0f)"),
 		*GetName(), MouvementCourant.VitesseMarche, MouvementCourant.VitesseJogging, MouvementCourant.VitesseCourse,
@@ -147,6 +158,55 @@ void AMansaCharacter::MansaContexte(FName NomContexte, bool bActif)
 	{
 		UE_LOG(LogMansa, Warning, TEXT("Console : contexte inconnu '%s' (Combat ou Escalade)."), *NomContexte.ToString());
 	}
+}
+
+void AMansaCharacter::MansaTestFranchissement()
+{
+	ObstaclesDeTest.Reset();
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		if (It->ActorHasTag(TEXT("MansaObstacleTest")))
+		{
+			ObstaclesDeTest.Add(*It);
+		}
+	}
+	// Ordre stable (par nom) pour des logs comparables d'un lancement à l'autre.
+	ObstaclesDeTest.Sort([](const TWeakObjectPtr<AActor>& A, const TWeakObjectPtr<AActor>& B) { return A->GetName() < B->GetName(); });
+	UE_LOG(LogMansa, Log, TEXT("Test franchissement : %d obstacle(s) tagué(s) MansaObstacleTest"), ObstaclesDeTest.Num());
+	IndexTestFranchissement = 0;
+	EtapeTestFranchissement();
+}
+
+void AMansaCharacter::EtapeTestFranchissement()
+{
+	// Bilan de l'obstacle précédent
+	if (IndexTestFranchissement > 0)
+	{
+		const AActor* Precedent = ObstaclesDeTest[IndexTestFranchissement - 1].Get();
+		const float Pieds = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		UE_LOG(LogMansa, Log, TEXT("Test franchissement : %s -> pieds à Z=%.0f, X=%.0f"), *GetNameSafe(Precedent), Pieds, GetActorLocation().X);
+	}
+	if (!ObstaclesDeTest.IsValidIndex(IndexTestFranchissement))
+	{
+		UE_LOG(LogMansa, Log, TEXT("Test franchissement : terminé"));
+		return;
+	}
+
+	const AActor* Obstacle = ObstaclesDeTest[IndexTestFranchissement++].Get();
+	if (Obstacle)
+	{
+		// Sira se place à 100 cm devant la face -X de l'obstacle, au sol, face à lui.
+		FVector Origine, Etendue;
+		Obstacle->GetActorBounds(true, Origine, Etendue);
+		const float DemiHauteur = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		const FVector Depart(Origine.X - Etendue.X - GetCapsuleComponent()->GetScaledCapsuleRadius() - 30.f, Origine.Y, Origine.Z - Etendue.Z + DemiHauteur + 2.f);
+		GetCharacterMovement()->StopMovementImmediately();
+		TeleportTo(Depart, FRotator::ZeroRotator);
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		const bool bOk = Traversal && Traversal->TenterFranchissement();
+		UE_LOG(LogMansa, Log, TEXT("Test franchissement : %s (haut %.0f cm) -> %s"), *Obstacle->GetName(), Etendue.Z * 2.f, bOk ? TEXT("franchissement lancé") : TEXT("aucun franchissement"));
+	}
+	GetWorldTimerManager().SetTimer(TimerTestFranchissement, this, &AMansaCharacter::EtapeTestFranchissement, 1.5f, false);
 }
 
 void AMansaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -375,6 +435,11 @@ void AMansaCharacter::Look(const FInputActionValue& Value)
 
 void AMansaCharacter::DoMove(float Right, float Forward)
 {
+	// Pendant un enjambement / mantle, le déplacement est piloté par le composant.
+	if (Traversal && Traversal->EstEnFranchissement())
+	{
+		return;
+	}
 	if (GetController() != nullptr)
 	{
 		// find out which way is forward
@@ -405,7 +470,11 @@ void AMansaCharacter::DoLook(float Yaw, float Pitch)
 
 void AMansaCharacter::DoJumpStart()
 {
-	// signal the character to jump
+	// Saut = « sauter / grimper » (GDD 4.2) : un obstacle franchissable devant passe avant le saut.
+	if (Traversal && Traversal->TenterFranchissement())
+	{
+		return;
+	}
 	Jump();
 }
 

@@ -123,10 +123,17 @@ def verifier_a5(cdo):
 
 # ---------------------------------------------------------------- D2
 def verifier_d2():
-    # La map ne peut pas être chargée proprement en commandlet ; on vérifie la présence
-    # des acteurs via le registre d'assets (acteurs externes OFPA) ou via le niveau.
-    ar = unreal.AssetRegistryHelpers.get_asset_registry()
-    verifier(EAL.does_asset_exist("/Game/Mansa/Maps/LV_Djenne_Test"), "D2 LV_Djenne_Test existe")
+    # Ouvre la map (lecture seule : rien n'est sauvegardé) et liste les obstacles tagués.
+    level_editor = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
+    if not verifier(level_editor.load_level("/Game/Mansa/Maps/LV_Djenne_Test"), "D2 LV_Djenne_Test ouverte"):
+        return
+    acteurs = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors()
+    obstacles = [a for a in acteurs if "MansaObstacleTest" in [str(t) for t in a.tags]]
+    labels = sorted(a.get_actor_label() for a in obstacles)
+    verifier(labels == ["OBS_Muret_060", "OBS_Rebord_120", "OBS_Rebord_170"], "D2 obstacles de test : %s" % labels)
+    for a in obstacles:
+        origine, etendue = a.get_actor_bounds(False)
+        log("       %s : hauteur %.0f cm" % (a.get_actor_label(), etendue.z * 2))
 
 
 def main():
