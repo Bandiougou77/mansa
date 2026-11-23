@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "InputMappingContext.h"
+#include "Engine/Engine.h"
 #include "Mansa.h"
 
 AMansaCharacter::AMansaCharacter()
@@ -52,24 +54,182 @@ AMansaCharacter::AMansaCharacter()
 
 void AMansaCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
-		
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMansaCharacter::Move);
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AMansaCharacter::Look);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMansaCharacter::Look);
-	}
-	else
+	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	if (!Input)
 	{
-		UE_LOG(LogMansa, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+		UE_LOG(LogMansa, Error, TEXT("'%s' : composant Enhanced Input introuvable (vérifie DefaultInput.ini)."), *GetNameSafe(this));
+		return;
 	}
+
+	// Déplacement / caméra / saut
+	BindIfValid(Input, JumpAction, ETriggerEvent::Started, &AMansaCharacter::OnJumpStarted);
+	BindIfValid(Input, JumpAction, ETriggerEvent::Completed, &AMansaCharacter::OnJumpCompleted);
+	BindIfValid(Input, MoveAction, ETriggerEvent::Triggered, &AMansaCharacter::Move);
+	BindIfValid(Input, MoveAction, ETriggerEvent::Completed, &AMansaCharacter::OnMoveCompleted);
+	BindIfValid(Input, LookAction, ETriggerEvent::Triggered, &AMansaCharacter::Look);
+	BindIfValid(Input, MouseLookAction, ETriggerEvent::Triggered, &AMansaCharacter::Look);
+
+	// Allures
+	BindIfValid(Input, SprintAction, ETriggerEvent::Started, &AMansaCharacter::OnSprintStarted);
+	BindIfValid(Input, SprintAction, ETriggerEvent::Completed, &AMansaCharacter::OnSprintCompleted);
+	BindIfValid(Input, SprintToggleAction, ETriggerEvent::Started, &AMansaCharacter::OnSprintToggle);
+	BindIfValid(Input, WalkAction, ETriggerEvent::Started, &AMansaCharacter::OnWalkStarted);
+	BindIfValid(Input, WalkAction, ETriggerEvent::Completed, &AMansaCharacter::OnWalkCompleted);
+
+	// Actions ponctuelles
+	BindIfValid(Input, InteractAction, ETriggerEvent::Started, &AMansaCharacter::OnInteract);
+	BindIfValid(Input, AttackLightAction, ETriggerEvent::Started, &AMansaCharacter::OnAttackLight);
+	BindIfValid(Input, AttackHeavyAction, ETriggerEvent::Started, &AMansaCharacter::OnAttackHeavy);
+	BindIfValid(Input, DodgeAction, ETriggerEvent::Started, &AMansaCharacter::OnDodge);
+	BindIfValid(Input, LockOnAction, ETriggerEvent::Started, &AMansaCharacter::OnLockOn);
+	BindIfValid(Input, DropHoldAction, ETriggerEvent::Started, &AMansaCharacter::OnDropHold);
+	BindIfValid(Input, PauseAction, ETriggerEvent::Started, &AMansaCharacter::OnPause);
+}
+
+void AMansaCharacter::BindIfValid(UEnhancedInputComponent* Input, UInputAction* Action, ETriggerEvent Event, void (AMansaCharacter::*Func)(const FInputActionValue&))
+{
+	if (Input && Action)
+	{
+		Input->BindAction(Action, Event, this, Func);
+	}
+}
+
+void AMansaCharacter::NotifyControllerChanged()
+{
+	Super::NotifyControllerChanged();
+
+	// Le contexte d'exploration est la base : on l'ajoute dès qu'un joueur local possède Sira.
+	SetContextActive(ExplorationContext, ExplorationPriority, true);
+}
+
+void AMansaCharacter::SetContextActive(UInputMappingContext* Context, int32 Priority, bool bActive)
+{
+	if (!Context)
+	{
+		return;
+	}
+	const APlayerController* PC = Cast<APlayerController>(GetController());
+	if (!PC || !PC->IsLocalController())
+	{
+		return;
+	}
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+	{
+		if (bActive)
+		{
+			if (!Subsystem->HasMappingContext(Context))
+			{
+				Subsystem->AddMappingContext(Context, Priority);
+				UE_LOG(LogMansa, Log, TEXT("Contexte d'entrée ajouté : %s (priorité %d)"), *GetNameSafe(Context), Priority);
+			}
+		}
+		else
+		{
+			Subsystem->RemoveMappingContext(Context);
+			UE_LOG(LogMansa, Log, TEXT("Contexte d'entrée retiré : %s"), *GetNameSafe(Context));
+		}
+	}
+}
+
+void AMansaCharacter::SetEscaladeContextActive(bool bActive)
+{
+	SetContextActive(EscaladeContext, EscaladePriority, bActive);
+	DebugInput(FString::Printf(TEXT("Contexte Escalade : %s"), bActive ? TEXT("actif") : TEXT("inactif")));
+}
+
+void AMansaCharacter::SetCombatContextActive(bool bActive)
+{
+	SetContextActive(CombatContext, CombatPriority, bActive);
+	DebugInput(FString::Printf(TEXT("Contexte Combat : %s"), bActive ? TEXT("actif") : TEXT("inactif")));
+}
+
+void AMansaCharacter::DebugInput(const FString& Message) const
+{
+	if (!bAfficherDebugInput)
+	{
+		return;
+	}
+	UE_LOG(LogMansa, Log, TEXT("[Input] %s"), *Message);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, DureeMessageDebug, FColor::Yellow, FString::Printf(TEXT("[Input] %s"), *Message));
+	}
+}
+
+void AMansaCharacter::OnJumpStarted(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Sauter / grimper"));
+	DoJumpStart();
+}
+
+void AMansaCharacter::OnJumpCompleted(const FInputActionValue& Value)
+{
+	DoJumpEnd();
+}
+
+void AMansaCharacter::OnMoveCompleted(const FInputActionValue& Value)
+{
+}
+
+void AMansaCharacter::OnSprintStarted(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Courir (maintien) : début"));
+}
+
+void AMansaCharacter::OnSprintCompleted(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Courir (maintien) : fin"));
+}
+
+void AMansaCharacter::OnSprintToggle(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Courir (bascule L3)"));
+}
+
+void AMansaCharacter::OnWalkStarted(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Marcher : début"));
+}
+
+void AMansaCharacter::OnWalkCompleted(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Marcher : fin"));
+}
+
+void AMansaCharacter::OnInteract(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Interagir"));
+}
+
+void AMansaCharacter::OnAttackLight(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Attaque légère"));
+}
+
+void AMansaCharacter::OnAttackHeavy(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Attaque lourde"));
+}
+
+void AMansaCharacter::OnDodge(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Esquive"));
+}
+
+void AMansaCharacter::OnLockOn(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Verrouiller une cible"));
+}
+
+void AMansaCharacter::OnDropHold(const FInputActionValue& Value)
+{
+	DebugInput(TEXT("Lâcher la prise"));
+}
+
+void AMansaCharacter::OnPause(const FInputActionValue& Value)
+{
+	// Le menu pause arrive en H1.
+	DebugInput(TEXT("Pause"));
 }
 
 void AMansaCharacter::Move(const FInputActionValue& Value)
